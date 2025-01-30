@@ -1,0 +1,14 @@
+Weekly team meeting 1/28/25:
+
+In attendance:  Amil, Elizabeth, Jennifer, Justin, and Michelle
+
+We started with introductions.  Everyone on the team described their area of expertise, which is a combination of front-end and backend experience.  
+
+We also discussed roles and expectations for this semester, including distribution of labor.  Jennifer will handle the database portion of this project, including building the MySQL database. Amil will work on the backend, including the integration of the frontend with the database.
+Elizabeth and Michelle will work on the front end interface. Justin will do a combination of front and backend.  
+
+We decided that our team project for this semester will be a club tracker app.  The app will be web-based, and built using React, Python, Flask, with a MYSQL database to handle user login info.  Users would be able to sign in and administer clubs they are members of, with different permissions for members.  We are also planning to include event information and budget tracking as features of the app.
+
+The majority of the meeting was spent working on the requirements document.  We came up with 20 different requirements, and assigned story points for each.  The requirements were a combination of front-end and backend items.  
+
+We decided tentatively on meeting weekly via Zoom at 6:00 p.m. on Tuesdays, but this is subject to change if the time doesn't work for everyone.  
