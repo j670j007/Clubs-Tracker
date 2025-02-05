@@ -12,3 +12,26 @@ We decided that our team project for this semester will be a club tracker app.  
 The majority of the meeting was spent working on the requirements document.  We came up with 20 different requirements, and assigned story points for each.  The requirements were a combination of front-end and backend items.  
 
 We decided tentatively on meeting weekly via Zoom at 6:00 p.m. on Tuesdays, but this is subject to change if the time doesn't work for everyone.  
+
+Weekly team meeting 2/4/25:
+
+In attendance:  Amil, Jennifer, Justin, and Michelle
+
+We talked about deliverables for this Sunday.  We need the architecture document to reflect what we are going to build.  
+
+We need something for authentication - User ID/password, e-mail.  These will be added to the Users table.  You will be able to self-register, and won't necessarily need to be added to a club right away.    
+
+Under Clubs, add an invite code.  This way a registered user can join a club.
+
+Merging Club_Members and Members table, making sure to keep the Admin flag on the Members table.  We are not adding specific permissions at this time, but are keeping track of admins using this flag.  
+
+Once Jennifer has built the database, she will export it and place on Git.
+
+For the architecture document, Jennifer will add the database schema and the update statements.  Anil will put togther the front-end portion of this document.  
+  
+We discussed Sprint 1.  All the database tables are added for that, then the user login/authentication.  We will use a session token for authentication instead of a global variable.  .  
+
+We divided up the work on the artifacts, with Jennifer doing the database portion and Anil, Elizabeth, Michelle, and Justin completing the remaining items.    
+
+We will need to ask a few questions of the TA, with regards to whether the requirements list is set in stone.  Also what is acceptable for the documentation to turn in Sunday.  
+
