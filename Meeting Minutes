@@ -53,3 +53,12 @@ Anil said when we are doing source control, try to do our own branch, then push 
 
 We won't be having a meeting on Tuesday.  We are going to meet Thursday at 6:00 for the Sprint 2 deliverables.  
 
+Weekly team meeting 2/13/25:
+
+In attendance:  Anil, Jennifer, Justin, Michelle
+
+We discussed what we needed to do to wrap up sprint 1, and divided up work on the artifacts.  Justin will do create and delete clubs, Jennifer will do user logout, and Michelle and Justin will do the user dashboard.
+
+We will need to refactor some of Elizabeth's backend code to work with the database, but other than that we have everything we need for this week's devliverable.
+
+Next meeting is on Tuesday.  
