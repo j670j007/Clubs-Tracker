@@ -35,9 +35,17 @@ from flask_sqlalchemy import SQLAlchemy  # (M) SQLAlchemy for database ORM
 import jwt  # (M) JWT library for token operations
 from datetime import datetime, timedelta  # (M) datetime for timestamp handling and token expiration
 from werkzeug.security import generate_password_hash, check_password_hash  # (C) Security functions for password handling
+from flask_cors import CORS
 
 # (C) Initialize Flask application
 app = Flask(__name__)
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:eecs582sp25@localhost/club_tracker'  # (M) Database connection string
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # (M) Disable SQLAlchemy modification tracking
