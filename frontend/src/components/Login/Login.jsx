@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import "./Login.css"
 
 function Login() {
@@ -8,6 +9,7 @@ function Login() {
         password: ''
       });
     const [error, setError] = useState('');
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {

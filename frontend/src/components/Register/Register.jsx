@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Register.css';
 
 function Register () {
@@ -12,6 +13,7 @@ function Register () {
         confirmPassword: ''
     });
     const [error, setError] = useState('');
+    const { register } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
