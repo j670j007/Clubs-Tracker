@@ -22,12 +22,12 @@ function Login() {
     };
 
     return (
-        <div>
-            <div>        
-                <p> Welcome Back </p>
-                <p> Please enter your details to sign in </p>
+        <div class="loginForm">
+            <div id="topHeader">        
+                <h1> Welcome Back </h1>
+                <h3> Please enter your details to sign in </h3>
             </div>
-            <div>
+            <div id="submission">
                 <form onSubmit={handleSubmit}>
                     <div><label htmlFor="email">Email</label>
                         <input
@@ -52,8 +52,8 @@ function Login() {
                     <button type="submit">Sign In</button>
                 </form>
             </div>
-            <div>
-                <p> Don't have an account? Sign up </p>
+            <div id="signUp">
+                <h3> Don't have an account? Sign up </h3>
             </div>
         </div>
 

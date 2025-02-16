@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@400;500&display=swap');
+
+.loginForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 45vh;
+}
+
+#topHeader h1{
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+}
+
+#topHeader h3{
+    font-family: 'Playfair Display', sans-serif;
+    color: #9CA3AF;
+    font-size: 16px;
+    margin-top: -20px;
+    letter-spacing: 0.02em;
+}
+
+#submission form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#submission form div{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#submission form button{
+    font-family: 'Playfair Display', sans-serif;
+    margin-top: 20px;
+    background-color: black;
+    color:aliceblue;
+    font-size: 14px;
+    padding: 10px 0 10px 0;
+    border-radius: 0px;
+}
+
+#submission form label{
+    align-self: flex-start;
+    font-size: 18px;
+    font-family: 'Playfair Display', sans-serif;
+}
+
+#submission form input{
+    padding: 7px 0 7px 0;
+    padding-left: 10px;
+    color: #6d737d;
+}
+
+#signUp {
+    margin-top: 50px;
+    font-family: 'Playfair Display', sans-serif;
+    font-size: 14px;
+}
