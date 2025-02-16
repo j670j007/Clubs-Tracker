@@ -1,10 +1,29 @@
+/*
+File: Register.jsx
+Description: Register form component
+Author(s): Anil Thapa
+Creation Date: 02/15/2025
+
+Preconditions:
+- Vite application running
+
+Input Values:
+- First name, Last name, Email, Username, Password
+
+Return Values:
+- A successful registration or a failed registration. Succesful will return the user to the login page.
+
+Error Conditions:
+- Bad inputs
+*/
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Register.css';
 
 function Register () {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({ // (A) form data with a set format
         firstName: '',
         lastName: '',
         username: '',
@@ -12,22 +31,22 @@ function Register () {
         password: '',
         confirmPassword: ''
     });
-    const [error, setError] = useState('');
-    const { register } = useAuth();
-    const navigate = useNavigate();
+    const [error, setError] = useState(''); // (A) error state for error management, when present will reveal html paragraph
+    const { register } = useAuth(); // (A) register function taken by hooking onto the auth context we defined
+    const navigate = useNavigate(); // (A) navigate function without refreshing the page
 
-    const handleChange = (e) => {
+    const handleChange = (e) => { // (A) whenever there is a change in our inputs, we keep all parameters but modify the one we changed
         setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
+            ...formData, // (A) shorthand to leave everything else the same
+            [e.target.name]: e.target.value // (A) target only the value we changed
         });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
+    const handleSubmit = async (e) => { // (A) handle submission
+        e.preventDefault(); // (A) prevent keystrokes while handling
+        setError(''); // (A) if there was an error before, reset it while handling the new submission
         
-        const success = await register({
+        const success = await register({ // wait for register request while modifying parameter names to match Flask API
           first_name: formData.firstName,
           last_name: formData.lastName,
           login_id: formData.username,
@@ -35,14 +54,15 @@ function Register () {
           password: formData.password
         });
 
-        if (success) {
-            navigate('/login');
+        if (success) { // (A) if successful (success = register() returns True)
+            navigate('/login'); // (A) go to login page
         } else {
             setError('Registration failed. Please try again.');
         }
     };
-
-    return (
+    
+    // this is just HTML
+    return ( 
         <div className="registerForm">
             <div>
                 <h1>Create Account</h1>
