@@ -3,17 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import "./Login.css"
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [formData, setFormData] = useState({
+        username: '',
+        password: ''
+      });
     const [error, setError] = useState('');
     // const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        setFormData({
+          ...formData,
+          [e.target.name]: e.target.value
+        });
+      };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         
         const success = true;
-        // const success = await login(email, password);
+        // const success = await login(formData.username, formData.password);
         if (success) {
             navigate('/dashboard');
         } else {
@@ -29,22 +38,22 @@ function Login() {
             </div>
             <div id="submission">
                 <form onSubmit={handleSubmit}>
-                    <div><label htmlFor="email">Email</label>
+                    <div><label htmlFor="email">Username</label>
                         <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            type="text"
+                            id="username"
+                            value={formData.username}
+                            onChange={handleChange}
                             required
                         />
                     </div>
                     <div>
-                        <label htmlFor="password"> Password </label>
+                        <label htmlFor="password">Password</label>
                         <input
                             type="password"
                             id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formData.password}
+                            onChange={handleChange}
                             required
                         />
                     </div>
