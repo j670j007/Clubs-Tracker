@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@400;500&display=swap');
 
-.registerForm{
+.registerForm {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -8,46 +8,46 @@
     text-align: center;
 }
 
-.registerForm h1{
+.registerForm h1 {
     font-family: 'Playfair Display', serif;
     font-size: 40px;
 }
 
-.registerForm form{
+.registerForm form {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.registerForm form div{
+.registerForm form div {
     display: flex;
     flex-direction: column;
 }
 
-.registerForm form button{
+.registerForm form button {
     font-family: 'Playfair Display', sans-serif;
     margin-top: 20px;
     background-color: black;
-    color:aliceblue;
+    color: aliceblue;
     font-size: 14px;
     padding: 10px 0 10px 0;
     border-radius: 0px;
 }
 
-#names{
+#names {
     flex-direction: row;
     justify-content: space-between;
     gap: 10px;
 }
 
-.registerForm form input{
+.registerForm form input {
     padding: 7px 0 7px 0;
     padding-left: 10px;
     color: #6d737d;
     font-family: 'Playfair Display', sans-serif;
 }
 
-.registerForm .login{
+.registerForm .login {
     margin-top: 50px;
     font-family: 'Playfair Display', sans-serif;
     font-size: 14px;
@@ -59,4 +59,10 @@
 
 .registerForm .login p a {
     color: black;
+}
+
+.error-message {
+    font-size: 11px;
+    font-family: 'Playfair Display', sans-serif;
+    color: rgba(255, 99, 71, 0.494);
 }

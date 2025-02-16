@@ -8,12 +8,12 @@
     text-align: center;
 }
 
-#topHeader h1{
+#topHeader h1 {
     font-family: 'Playfair Display', serif;
     font-size: 40px;
 }
 
-#topHeader h3{
+#topHeader h3 {
     font-family: 'Playfair Display', sans-serif;
     color: #9CA3AF;
     font-size: 16px;
@@ -21,35 +21,35 @@
     letter-spacing: 0.02em;
 }
 
-#submission form{
+#submission form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-#submission form div{
+#submission form div {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-#submission form button{
+#submission form button {
     font-family: 'Playfair Display', sans-serif;
     margin-top: 20px;
     background-color: black;
-    color:aliceblue;
+    color: aliceblue;
     font-size: 14px;
     padding: 10px 0 10px 0;
     border-radius: 0px;
 }
 
-#submission form label{
+#submission form label {
     align-self: flex-start;
     font-size: 18px;
     font-family: 'Playfair Display', sans-serif;
 }
 
-#submission form input{
+#submission form input {
     padding: 7px 0 7px 0;
     padding-left: 10px;
     color: #6d737d;
@@ -67,4 +67,10 @@
 
 #signUp h3 a {
     color: black;
+}
+
+.error-message {
+    font-size: 11px;
+    font-family: 'Playfair Display', sans-serif;
+    color: rgba(255, 99, 71, 0.397);
 }
