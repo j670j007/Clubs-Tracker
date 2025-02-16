@@ -1,38 +1,59 @@
+/*
+File: Login.jsx
+Description: Login form component
+Author(s): Anil Thapa
+Creation Date: 02/15/2025
+
+Preconditions:
+- Vite application running
+
+Input Values:
+- Username, Password
+
+Return Values:
+- A successful login or a failed login. Successful login leads to the landing page
+
+Error Conditions:
+- Bad inputs
+*/
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import "./Login.css"
 
 function Login() {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState({ // (A) login form only requires username and password
         username: '',
         password: ''
       });
-    const [error, setError] = useState('');
-    const { login } = useAuth();
-    const navigate = useNavigate();
+    const [error, setError] = useState(''); // (A) error state management with html paragraph hidden depending on existing cond
+    const { login } = useAuth(); // (A) login function taken by hooking onto the authentication context
+    const navigate = useNavigate(); // (A) navigate function used to modify pages without refreshing
 
-    const handleChange = (e) => {
+    const handleChange = (e) => { // (A) whenever there is a change in our inputs, we modify only it, and leave the rest the same
         setFormData({
-          ...formData,
-          [e.target.name]: e.target.value
+          ...formData, // (A) shorthand for leaving everything else the same
+          [e.target.name]: e.target.value // (A) modify only the name that changed
         });
       };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        const success = await login({
+    const handleSubmit = async (e) => { // (A) submission handling
+        e.preventDefault(); // (A) stop any inputs or changes to fields when we submit
+        setError(''); // (A) reset error on this new submission
+
+        const success = await login({ // success is dependent on login id and password (we map to the API expectations)
             login_id: formData.username,
             password: formData.password
         });
-        if (success) {
+
+        if (success) { // (A) login() returns true or false, success means a token/data was generated so we move forwaard
             navigate('/dashboard');
         } else {
             setError('Invalid credentials');
         }
     };
-
+    // (A) this is just HTML
     return (
         <div className="loginForm">
             <div id="topHeader">        
