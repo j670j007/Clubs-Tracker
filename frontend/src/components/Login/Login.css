@@ -6,6 +6,11 @@
     gap: 20px;
     min-width: 45vh;
     text-align: center;
+    outline-width: 1px;
+    outline-style: groove;
+    padding: 60px;
+    border-radius: 20px;
+    outline-color: gray;
 }
 
 #topHeader h1 {
@@ -53,6 +58,11 @@
     padding: 7px 0 7px 0;
     padding-left: 10px;
     color: #6d737d;
+}
+
+#submission form input:focus {
+    outline-width: 1px;
+    outline-style: solid;
 }
 
 #signUp {

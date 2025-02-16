@@ -6,6 +6,11 @@
     gap: 20px;
     min-width: 45vh;
     text-align: center;
+    outline-width: 1px;
+    outline-style: groove;
+    padding: 60px;
+    border-radius: 20px;
+    outline-color: gray;
 }
 
 .registerForm h1 {
@@ -45,6 +50,11 @@
     padding-left: 10px;
     color: #6d737d;
     font-family: 'Playfair Display', sans-serif;
+}
+
+.registerForm form input:focus {
+    outline-width: 1px;
+    outline-style: solid;
 }
 
 .registerForm .login {
