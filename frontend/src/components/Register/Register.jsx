@@ -24,13 +24,14 @@ function Register () {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-
-        /*
+        
         const success = await register({
-          name: formData.name,
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          login_id: formData.username,
           email: formData.email,
           password: formData.password
-        });*/
+        });
 
         if (success) {
             navigate('/login');

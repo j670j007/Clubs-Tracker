@@ -21,8 +21,7 @@ function Login() {
         e.preventDefault();
         setError('');
         
-        const success = true;
-        // const success = await login(formData.username, formData.password);
+        const success = await login(formData.username, formData.password);
         if (success) {
             navigate('/dashboard');
         } else {
