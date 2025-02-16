@@ -22,8 +22,10 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        
-        const success = await login(formData.username, formData.password);
+        const success = await login({
+            login_id: formData.username,
+            password: formData.password
+        });
         if (success) {
             navigate('/dashboard');
         } else {
