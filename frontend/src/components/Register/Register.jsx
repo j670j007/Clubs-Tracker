@@ -40,10 +40,12 @@ function Register () {
     };
 
     return (
-        <div className="auth-container">
+        <div className="registerForm">
+            <div>
+                <h1>Create Account</h1>
+            </div>
             <form onSubmit={handleSubmit}>
-                <h2>Create Account</h2>
-                <div>
+                <div id="names">
                     <input
                         type="text"
                         name="firstName"
@@ -51,7 +53,7 @@ function Register () {
                         value={formData.firstName}
                         onChange={handleChange}
                         required
-                    />
+                    />  
                     <input
                         type="text"
                         name="lastName"
@@ -93,8 +95,10 @@ function Register () {
                 </div>
                 {error && <p className="error-message">{error}</p>}
                 <button type="submit">Register</button>
-                <p>Already have an account? <a href="/login">Login here</a></p>
             </form>
+            <div className="login">
+                <p>Already have an account? <a href="/login">Login here</a></p>
+            </div>
         </div>
     );
 };
