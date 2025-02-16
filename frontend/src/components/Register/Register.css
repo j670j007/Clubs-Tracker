@@ -11,7 +11,7 @@
     padding: 20px 50px;
     outline-color: gray;
     max-width: 600px;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.957);
 }
 
 .registerForm div{
@@ -20,7 +20,7 @@
 
 .registerForm h1 {
     font-family: 'Playfair Display', serif;
-    font-size: 40px;
+    font-size: 36px;
 }
 
 .registerForm form {
