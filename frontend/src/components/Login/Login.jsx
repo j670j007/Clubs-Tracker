@@ -57,7 +57,7 @@ function Login() {
     return (
         <div className="loginForm">
             <div id="topHeader">        
-                <h1> Welcome Back </h1>
+                <h1> Welcome </h1>
                 <h3> Please enter your details to sign in </h3>
             </div>
             <div id="submission">

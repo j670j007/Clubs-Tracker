@@ -4,13 +4,18 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    min-width: 45vh;
     text-align: center;
     outline-width: 1px;
     outline-style: groove;
-    padding: 60px;
     border-radius: 20px;
+    padding: 20px 50px;
     outline-color: gray;
+    max-width: 600px;
+    background-color: white;
+}
+
+.registerForm div{
+    min-width: 350px;
 }
 
 .registerForm h1 {
@@ -32,7 +37,7 @@
 .registerForm form button {
     font-family: 'Playfair Display', sans-serif;
     margin-top: 20px;
-    background-color: black;
+    background-color: rgba(93, 93, 219, 0.925);
     color: aliceblue;
     font-size: 14px;
     padding: 10px 0 10px 0;

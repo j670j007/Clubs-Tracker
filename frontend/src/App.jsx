@@ -30,9 +30,9 @@ function App() {
     <Router> {/* Router to wrap around */}
       <AuthProvider> {/* Authentication context for the components to inherit auth needs */}
         <Routes> {/* Routes setup */}
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/register" element={<Register/>}/>
-          <Route path="/dashboard" element={<Landing/>}/>
+          <Route path="/login" element={<><div className="background"></div><Login/></>}/>
+          <Route path="/register" element={<><div className="background"></div><Register/></>}/>
+          <Route path="/dashboard" element={<><div className="background"></div><Landing/></>}/>
           <Route path="*" element={<Navigate to ="/login" replace/>}/> {/* this will be changed with some safety later */}
         </Routes>
       </AuthProvider>
