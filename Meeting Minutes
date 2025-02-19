@@ -35,7 +35,7 @@ We divided up the work on the artifacts, with Jennifer doing the database portio
 
 We will need to ask a few questions of the TA, with regards to whether the requirements list is set in stone.  Also what is acceptable for the documentation to turn in Sunday.  
 
-Meeting Minutes 2/7/25:
+Weekly team meeting 2/7/25:
 
 In attendance:  Amil, Elizabeth, Jennifer, Justin, Michelle 
 
@@ -62,3 +62,23 @@ We discussed what we needed to do to wrap up sprint 1, and divided up work on th
 We will need to refactor some of Elizabeth's backend code to work with the database, but other than that we have everything we need for this week's devliverable.
 
 Next meeting is on Tuesday.  
+
+Weekly team meeting:  2/18/25 
+
+In attendance:  Anil, Elizabeth, Jennifer, Justin, Michelle
+
+Today's discussion was about delegating tasks. Our tasks were divided up as follows: 
+
+User Logout - Anil
+Create a Club - Jennifer 
+Delete a club - Michelle 
+User Dashboard - Anil, Justin
+
+app.py - Jennifer will add her stuff in app.py, along with the existing code.  
+
+Michelle built test_app.py - Programmers can make test cases, will print output to the terminal.
+
+We started talking about what we wanted to do for sprint 3. We decided on Leave a club and Join a club. Elizabeth will handle the artifacts.  Deliverables are due on Mar. 2. 
+
+Michelle will e-mail the TA about our snow day meeting.  
+
