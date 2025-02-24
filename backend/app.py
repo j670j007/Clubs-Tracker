@@ -1,9 +1,10 @@
 """
 File: app.py
 Description: Backend Flask application for club tracking system. Provides user registration and authentication, JWT session tokens
-Author(s): Michelle Chen, Claire Channel
+Author(s): Michelle Chen, Claire Channel, Jennifer Aber
 Creation Date: 02/13/2025
 Revised: 02/15/2025 - (M) Updated register and login fields, added session tokens and comments
+Revised: 02/24/2025 - Added ability to create a club 
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -36,6 +37,8 @@ import jwt  # (M) JWT library for token operations
 from datetime import datetime, timedelta  # (M) datetime for timestamp handling and token expiration
 from werkzeug.security import generate_password_hash, check_password_hash  # (C) Security functions for password handling
 from flask_cors import CORS
+from sqlalchemy import text
+
 
 # (C) Initialize Flask application
 app = Flask(__name__)
@@ -78,6 +81,40 @@ class User(db.Model):
     Password = db.Column(db.String(255))              # (M) Hashed password storage
     Email = db.Column(db.String(255))                 # (M) User email address
 
+class Club(db.Model):
+    """
+     User database model representing the 'clubs' table
+    
+    Attributes:
+        Club_ID (int): Primary key for user identification. Auto-assigned.
+        Club_Name (str): Name of the club
+        Club_Desc (str): Description of the club
+        Date_Added (date): Date club was added to system
+        Invite_Code (str): Invite code assigned to the club
+    """
+    __tablename__ = 'clubs'
+    Club_ID = db.Column(db.Integer, primary_key=True)  #  Auto-incrementing primary key
+    Club_Name = db.Column(db.String(255))             #  Club name field
+    Club_Desc = db.Column(db.String(255))             #  Description of the club
+    Date_Added = db.Column(db.Date)                   #  Date added
+    Invite_Code = db.Column(db.String(255))           #  Club invite code
+
+class ClubUsers(db.Model):
+    """
+     User database model representing the 'club_users' table
+
+    Attributes:
+        Club_User_ID (int): Primary key for identifying club/user link. Auto-assigned. 
+        Club_ID (int): ID of club being added, foreign key to clubs table
+        User ID (int): ID of user currently logged in.  
+        Club_User_Date_Added: Date club/user link was created.
+    """
+    __tablename__ = 'club_users'
+    Club_User_ID = db.Column(db.Integer, primary_key=True) #  Auto-incrementing primary key
+    User_ID = db.Column(db.Integer, db.ForeignKey('users.User_ID')) # Logged-in user
+    Club_ID = db.Column(db.Integer) # ID of club being added
+    Club_User_Date_Added = db.Column(db.Date) # Date added 
+    
 def generate_token(user_id):
     """
     (M) Generate a new JWT token for a user.
@@ -157,6 +194,71 @@ def token_required(f):
 
     return decorated
 
+@app.route('/create_club', methods=['POST'])
+def create_club():
+    """
+     Logged-in user can add a new club to the database
+
+    Takes a club name, description, and invite code for adding users to an existing club.  
+
+    Returns:
+        #JSON response with success/error message and status code
+
+    Error conditions:
+        - Duplicate club name (400)
+        - Missing required fields (400)
+    """
+    data = request.get_json()  # (M) Parse JSON request data
+
+    # (M) Validate that all required fields are present
+    required_fields = ['club_name', 'club_desc', 'invite_code', 'login_id']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Missing required field: {field}'}), 400
+    
+    user = User.query.filter_by(Login_ID=data['login_id']).first()
+
+    # (M) Check for existing club name in database
+    if Club.query.filter_by(Club_Name=data['club_name']).first():
+        return jsonify({'error': 'Name already taken'}), 400
+    
+    try:
+        # (M) Create new user object with hashed password
+        new_club = Club(
+            Club_Name=data['club_name'],
+            Club_Desc=data['club_desc'],
+            Date_Added=datetime.now().date(),
+            Invite_Code=data['invite_code'],
+        )
+        # (M) Add and commit new user to database
+        db.session.add(new_club)
+        db.session.commit()
+        logged_in_user_id = user.User_ID
+        add_club_user(new_club.Club_ID, logged_in_user_id)
+
+        return jsonify({
+            'message': 'Club added successfully',
+            'club_id': new_club.Club_ID
+        }), 201
+    
+    except Exception as e:
+        # (M) Roll back transaction on error
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+    
+@app.route('/add_club_user', methods=['POST'])    
+def add_club_user(club_id, user_id):
+    """
+     Adds a row to the club_users table.  For new clubs, this adds a row with the club_id and the user_id of the logged-in user. 
+
+    Returns:
+        #JSON response with success/error message and status code
+
+    """
+    new_club_user = ClubUsers(Club_ID=club_id, User_ID=user_id)
+    db.session.add(new_club_user)
+    db.session.commit()
+    
 @app.route('/register', methods=['POST'])
 def register():
     """
@@ -251,11 +353,21 @@ def login():
     # (M) Return error for invalid credentials
     return jsonify({'error': 'Invalid credentials'}), 401
 
+
 if __name__ == '__main__':
     # (M) Initialize database tables
     with app.app_context():
+        # Disable foreign key checks
+        with app.app_context():
+            db.session.execute(text('SET FOREIGN_KEY_CHECKS = 0'))
+        
+        # Drop all tables
         db.drop_all()  # (M) !!! DANGER: Removes all data from database !!! Use with caution when testing!!!
         db.create_all()  # (M) Create fresh database tables
+        
+        # Re-enable foreign key checks
+        with app.app_context():
+            db.session.execute(text('SET FOREIGN_KEY_CHECKS = 1'))
 
     # (M) Start Flask development server
     app.run(debug=True)
