@@ -78,6 +78,43 @@ class User(db.Model):
     Password = db.Column(db.String(255))              # (M) Hashed password storage
     Email = db.Column(db.String(255))                 # (M) User email address
 
+class Club(db.Model):
+    """
+    User database model representing the 'clubs' table
+    
+    Attributes:
+        Club_ID (int): Primary key for user identification. Auto-assigned.
+        Club_Name (str): Name of the club
+        Club_Desc (text): Description of the club
+        Date_Added (date): Date club was added to system
+        Invite_Code (str): Invite code assigned to the club
+    """
+    __tablename__ = 'clubs'
+    Club_ID = db.Column(db.Integer, primary_key=True)  # Auto-incrementing primary key
+    Club_Name = db.Column(db.String(255))             # Club name field
+    Club_Desc = db.Column(db.Text)                    # Description of the club
+    Date_Added = db.Column(db.Date)                   #  Date added
+    Invite_Code = db.Column(db.String(255))           #  Club invite code
+
+
+class ClubUsers(db.Model):
+    """
+     User database model representing the 'club_users' table
+
+    Attributes:
+        Club_User_ID (int): Primary key for identifying club/user link. Auto-assigned. 
+        Club_ID (int): ID of club being added, foreign key to clubs table
+        User ID (int): ID of user currently logged in.
+        Club_User_Date_Added: Date club/user link was created.
+        Admin (boolean): Boolean value to indicate if user has special administrative privileges
+    """
+    __tablename__ = 'club_users'
+    Club_Member_ID = db.Column(db.Integer, primary_key=True) #  Auto-incrementing primary key
+    Club_ID = db.Column(db.Integer, db.ForeignKey('clubs.Club_ID')) # ID of club being added
+    User_ID = db.Column(db.Integer, db.ForeignKey('users.User_ID')) # Logged-in user
+    Club_Member_Date_Added = db.Column(db.Date) # Date added 
+    Admin = db.Column(db.Boolean)  # (M) Admin boolean value
+
 def generate_token(user_id):
     """
     (M) Generate a new JWT token for a user.
