@@ -32,7 +32,7 @@ function App() {
         <Routes> {/* Routes setup */}
           <Route path="/login" element={<><div className="background"></div><Login/></>}/>
           <Route path="/register" element={<><div className="background"></div><Register/></>}/>
-          <Route path="/dashboard" element={<><div className="background"></div><Landing/></>}/>
+          <Route path="/dashboard" element={<Landing/>}/>
           <Route path="*" element={<Navigate to ="/login" replace/>}/> {/* this will be changed with some safety later */}
         </Routes>
       </AuthProvider>
