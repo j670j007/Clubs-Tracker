@@ -1,9 +1,9 @@
 """
 File: app.py
-Description: Backend Flask application for club tracking system. Provides user registration and authentication, JWT session tokens
-Author(s): Michelle Chen, Claire Channel
+Description: Backend Flask application for club tracking system
+Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 02/15/2025 - (M) Updated register and login fields, added session tokens and comments
+Revised: 02/25/2025 - (M) Add create_club() function and tests
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -12,26 +12,28 @@ Preconditions:
 Input Values:
 - Registration endpoint accepts JSON with: first_name, last_name, email, password, login_id
 - Login endpoint accepts JSON with: login_id, password
+- Create club endpoint accepts JSON with: club_name, club_desc, invite_code
 
 Return Values:
 - Registration success: JSON with message and user_id, status 201
 - Login success: JSON with message, user_id, and name, status 200
+- Create club success: JSON with message and club_id, status 201
 - Error responses: JSON with error message, status 400 or 401
 
 Error Conditions:
 - Database connection failures
-- Duplicate email or login_id during registration
+- Duplicate entries to database
 - Invalid credentials during login
 - Missing required fields
-- Server-side exceptions during database operations
 
 Warnings:
-- db.drop_all() in main block will clear entire database - use with caution
+- drop_all_tables() in main block will clear entire database - use with caution
 """
 
 from functools import wraps  # (M) For preserving function metadata in decorators
 from flask import Flask, request, jsonify  # (M) Flask for web framework, request/jsonify for HTTP handling 
 from flask_sqlalchemy import SQLAlchemy  # (M) SQLAlchemy for database ORM
+from sqlalchemy import text
 import jwt  # (M) JWT library for token operations
 from datetime import datetime, timedelta  # (M) datetime for timestamp handling and token expiration
 from werkzeug.security import generate_password_hash, check_password_hash  # (C) Security functions for password handling
@@ -97,7 +99,7 @@ class Club(db.Model):
     Invite_Code = db.Column(db.String(255))           #  Club invite code
 
 
-class ClubUsers(db.Model):
+class ClubUser(db.Model):
     """
      User database model representing the 'club_users' table
 
@@ -288,10 +290,82 @@ def login():
     # (M) Return error for invalid credentials
     return jsonify({'error': 'Invalid credentials'}), 401
 
+@app.route('/create_club', methods=['POST'])
+@token_required
+def create_club(current_user):
+    """
+    Logged-in user can add a new club to the database
+
+    Takes a club name, description, and invite code for adding users to an existing club.  
+
+    Returns:
+        - JSON response with success/error message and status code
+
+    Error conditions:
+        - Duplicate club name (400)
+        - Missing required fields (400)
+    """
+    data = request.get_json()  # (M) Parse JSON request data
+   
+    # (M) Validate that all required fields are present
+    required_fields = ['club_name', 'club_desc', 'invite_code']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Missing required field: {field}'}), 400
+           
+    try:
+        # (M) Create new club object
+        new_club = Club(
+            Club_Name=data['club_name'],
+            Club_Desc=data['club_desc'],
+            Date_Added=datetime.now().date(),
+            Invite_Code=data['invite_code']
+        )
+        db.session.add(new_club)
+        db.session.commit()
+       
+        # (M) Also make the creator a club member and admin
+        new_member = ClubUser(
+            Club_ID=new_club.Club_ID,
+            User_ID=current_user.User_ID,
+            Club_Member_Date_Added=datetime.now().date(),
+            Admin=True
+        )
+        db.session.add(new_member)
+        db.session.commit()
+       
+        return jsonify({
+            'message': 'Club created successfully',
+            'club_id': new_club.Club_ID
+        }), 201
+    
+    except Exception as e:
+        # (M) Roll back transaction on error
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+
+def drop_all_tables():
+    """
+    (M) Custom function to safely drop all tables, handling foreign key constraints.
+    
+    This function temporarily disables foreign key checks, drops all tables, and then re-enables the checks.
+
+    !!! WARNING !!! Removes all data from database!!! Should only be used for testing purposes!!!
+    """
+    with db.engine.connect() as conn:
+        conn.execute(db.text("SET FOREIGN_KEY_CHECKS = 0"))
+        
+        # (M) Drop all tables using raw SQL for maximum control
+        for table in reversed(db.metadata.sorted_tables):
+            conn.execute(db.text(f"DROP TABLE IF EXISTS {table.name}"))
+            
+        conn.execute(db.text("SET FOREIGN_KEY_CHECKS = 1"))
+        conn.commit()
+
 if __name__ == '__main__':
     # (M) Initialize database tables
     with app.app_context():
-        db.drop_all()  # (M) !!! DANGER: Removes all data from database !!! Use with caution when testing!!!
+        drop_all_tables()  # (M) !!! DANGER: Removes all data from database !!! Use with caution when testing!!!
         db.create_all()  # (M) Create fresh database tables
 
     # (M) Start Flask development server

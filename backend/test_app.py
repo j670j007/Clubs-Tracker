@@ -1,12 +1,9 @@
 """
 File: test_app.py
-Description: Automated test suite for user registration, login, authentication
+Description: Automated test suite for app.py functionality
 Author(s): Michelle Chen
 Creation Date: 02/15/2025
-Revised: 02/15/2025 - (M) Created register, login, and authentication tests
-
-This module provides automated testing for a user authentication system's REST API endpoints.
-It tests both positive and negative cases for user registration and login functionality.
+Revised: 02/25/2025 - (M) Add create_club test
 
 Preconditions:
 - Flask server must be running on localhost:5000
@@ -16,6 +13,7 @@ Preconditions:
 Input Values:
 - Registration requires: first_name, last_name, email, password, login_id (all strings)
 - Login requires: login_id, password (both strings)
+- Create club requires: club_name, club_desc, invite_code
 
 Return Values:
 - Each test function returns JSON response indicating success or failure
@@ -23,9 +21,7 @@ Return Values:
 
 Error Conditions:
 - ConnectionError if server is not running
-- HTTP 400 for invalid input
-- HTTP 409 for duplicate email/login_id
-- HTTP 401 for invalid login credentials
+- HTTP error code for any negative test cases
 """
 
 import requests  # (M) Import requests library for HTTP operations
@@ -41,10 +37,6 @@ class TestSession:
         user_id (str): Authenticated user's ID
         token (str): JWT authentication token
         headers (dict): HTTP headers including authentication token
-    
-    Usage:
-        session = TestSession()
-        session.set_token("jwt_token_here")
     """
     def __init__(self):
         # (M) Initialize session with empty state
@@ -59,14 +51,10 @@ class TestSession:
 
 def test_registration():
     """
-    Test user registration endpoint with both valid and invalid cases.
+    (M) Test user registration endpoint with both valid and invalid cases.
     
     Returns:
         str: User ID of successfully registered user, or None if registration fails
-    
-    Side Effects:
-        - Creates new user in database
-        - Prints test results to console
     """
     print("\nTesting User Registration...")
     
@@ -112,10 +100,6 @@ def test_login(session):
     
     Returns:
         str: User ID of successfully logged in user, or None if login fails
-    
-    Side Effects:
-        - May create session in backend
-        - Prints test results to console
     """
     print("\nTesting User Login...")
     
@@ -163,6 +147,52 @@ def test_login(session):
 
     return session.user_id  # (M) Return user_id for potential use in other tests
 
+def test_create_club(session):
+    """
+    (M) Test create club endpoint with both valid and invalid cases.
+    
+    Returns:
+        str: Club ID of successfully created club, or None if creation fails
+    """
+    print("\nTesting Club Creation...")
+   
+    # (M) Positive test case
+    print("Positive Test - Valid Club Creation:")
+    club_data = {
+        "club_name": "Test Club",
+        "club_desc": "A club for testing",
+        "invite_code": "TEST123"
+    }
+   
+    response = requests.post(
+        f'{BASE_URL}/create_club',
+        json=club_data,
+        headers=session.headers
+    )
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+    club_id = response.json().get('club_id')
+
+    # (M) Negative test cases
+    print("\nNegative Test - Missing Required Fields:")
+    invalid_club = {
+        "club_name": "Invalid Club"
+    }
+    response = requests.post(
+        f'{BASE_URL}/create_club',
+        json=invalid_club,
+        headers=session.headers
+    )
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+
+    print("\nNegative Test - No Authentication:")
+    response = requests.post(f'{BASE_URL}/create_club', json=club_data)
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+
+    return club_id
+
 def run_all_tests():
     """
     (M) Main test runner that executes all test cases in sequence.
@@ -196,6 +226,12 @@ def run_all_tests():
             print("Login failed, stopping tests. Check if registration succeeded and login credentials are correct.")
             return
         print(f"Successfully logged in with user_id: {logged_in_user_id}")
+
+        # Test club creation with authentication
+        club_id = test_create_club(session)
+        if not club_id:
+            print("Club creation failed, stopping tests")
+            return
 
         print("\n=== Test Suite Completed ===")
         
