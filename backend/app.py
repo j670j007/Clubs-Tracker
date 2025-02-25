@@ -3,7 +3,7 @@ File: app.py
 Description: Backend Flask application for club tracking system
 Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 02/25/2025 - (M) Add create_club() function and tests
+Revised: 02/25/2025 - (M) Add delete_club() function
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -18,7 +18,8 @@ Return Values:
 - Registration success: JSON with message and user_id, status 201
 - Login success: JSON with message, user_id, and name, status 200
 - Create club success: JSON with message and club_id, status 201
-- Error responses: JSON with error message, status 400 or 401
+- Delete club success: JSON status 200
+- Error responses: JSON with error message, status 400/401/500
 
 Error Conditions:
 - Database connection failures
@@ -343,6 +344,50 @@ def create_club(current_user):
         # (M) Roll back transaction on error
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
+    
+@app.route('/clubs/<int:club_id>', methods=['DELETE'])
+@token_required
+def delete_club(current_user, club_id):
+    """
+    (M) Delete a club from the database
+
+    Returns:
+        - JSON response with success/error message and status code
+
+    Error conditions:
+        - Club does not exist (404)
+        - User is not admin (403)
+    """
+    # (M) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+       
+    # (M) Check if user is an admin of the club
+    is_admin = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+
+    if not is_admin:
+        return jsonify({'error': 'Permission denied. Only club admins can delete clubs'}), 403
+    
+    try:
+        # (M) TODO later: delete all related records first (events, expenses, etc.) before deleting club itself
+        # Delete all club users
+        ClubUser.query.filter_by(Club_ID=club_id).delete()
+
+        # (M) Delete the club itself
+        db.session.delete(club)
+        db.session.commit()
+       
+        return jsonify({'message': 'Club and all related data successfully deleted'}), 200
+    
+    except Exception as e:
+        # (M) Roll back transaction on error
+        db.session.rollback()
+        return jsonify({'error': f'Failed to delete club: {str(e)}'}), 500
 
 def drop_all_tables():
     """
@@ -365,7 +410,7 @@ def drop_all_tables():
 if __name__ == '__main__':
     # (M) Initialize database tables
     with app.app_context():
-        drop_all_tables()  # (M) !!! DANGER: Removes all data from database !!! Use with caution when testing!!!
+        #drop_all_tables()  # (M) !!! DANGER: Removes all data from database !!! Use with caution when testing!!!
         db.create_all()  # (M) Create fresh database tables
 
     # (M) Start Flask development server

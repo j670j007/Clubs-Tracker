@@ -3,7 +3,7 @@ File: test_app.py
 Description: Automated test suite for app.py functionality
 Author(s): Michelle Chen
 Creation Date: 02/15/2025
-Revised: 02/25/2025 - (M) Add create_club test
+Revised: 02/25/2025 - (M) Add delete_club test
 
 Preconditions:
 - Flask server must be running on localhost:5000
@@ -193,6 +193,52 @@ def test_create_club(session):
 
     return club_id
 
+def test_delete_club(session, club_id):
+    """
+    (M) Test delete club endpoint with both valid and invalid cases.
+    
+    Returns:
+        str: Club ID of the second created club, or None if deletion fails
+    """
+    print("\nTesting Club Deletion...")
+    
+    # (M) First create another club that we won't be admin of
+    print("Setup - Creating a second club:")
+    second_club_data = {
+        "club_name": "Second Test Club",
+        "club_desc": "A club we shouldn't be able to delete",
+        "invite_code": "TEST456"
+    }
+    
+    response = requests.post(
+        f'{BASE_URL}/create_club',
+        json=second_club_data,
+        headers=session.headers
+    )
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+    second_club_id = response.json().get('club_id')
+    
+    # (M) Negative test - Non-existent club
+    print("\nNegative Test - Non-existent Club ID:")
+    response = requests.delete(
+        f'{BASE_URL}/clubs/9999',
+        headers=session.headers
+    )
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+    
+    # (M) Positive test - Delete our club
+    print("\nPositive Test - Delete Own Club:")
+    response = requests.delete(
+        f'{BASE_URL}/clubs/{club_id}',
+        headers=session.headers
+    )
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")
+    
+    return second_club_id
+
 def run_all_tests():
     """
     (M) Main test runner that executes all test cases in sequence.
@@ -218,20 +264,21 @@ def run_all_tests():
         if not user_id:  # (M) Check if registration was successful
             print("Registration failed, stopping tests")
             return
-        print(f"Successfully registered with user_id: {user_id}")
 
         # (M) Execute login tests and get token
         logged_in_user_id = test_login(session)
         if not logged_in_user_id:  # (M) Check if login was successful
             print("Login failed, stopping tests. Check if registration succeeded and login credentials are correct.")
             return
-        print(f"Successfully logged in with user_id: {logged_in_user_id}")
 
-        # Test club creation with authentication
+        # (M) Test club creation with authentication
         club_id = test_create_club(session)
         if not club_id:
             print("Club creation failed, stopping tests")
             return
+        
+        # (M) Test deleting club with authentication
+        second_club_id = test_delete_club(session, club_id)
 
         print("\n=== Test Suite Completed ===")
         
