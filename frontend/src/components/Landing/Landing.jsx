@@ -38,7 +38,14 @@ function Landing() {
                     </ul>
                 </div>
                 <div id="landingPage">
-                    <p></p>
+                    {/*<div className="clubNote">
+                        <div className="clubHeader">
+                            <p>Test</p>
+                        </div>
+                        <div className="clubContent">
+                            <p>as duiasdhaisdhusad</p>
+                        </div>
+                    </div>*/}
                 </div>
             </div>
         </div>

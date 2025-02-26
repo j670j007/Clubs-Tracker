@@ -9,11 +9,12 @@
     background-image: url('../../assets/pattern.png');
     background-size: 50%;
     background-position: center;
+    overflow: hidden;
 }
 
 #innerDiv {
-    height: 97%;
-    width: 98%;
+    height: 96%;
+    width: 97%;
     align-self: center;
     border-radius: 50px;
 }
@@ -21,9 +22,14 @@
 #landingPage {
     background-color: white;
     display: flex;
-    padding: 10px 40px;
+    padding: 60px 10px;
     height: 90%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);}
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    gap: 20px 50px;
+    flex-wrap: wrap;
+    overflow: scroll;
+}
 
 #navBar {
     display: flex;
@@ -52,4 +58,49 @@
     max-width: 55px;
     max-height: 55px;
     padding-left: 20px;
+}
+
+.clubNote {
+    display: flex;
+    flex-direction: column;
+    width: 18%;
+    height: 32%;
+    background-color: #fed98ff1;
+    box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.1);
+    border-style: groove;
+    border-width: 0 1px 1px 0;
+    border-color: rgb(65, 165, 134);
+    font-family: 'Playfair Display', sans-serif;
+    color: rgba(0, 0 , 0, 0.8);
+}
+
+.clubHeader {
+    height: 12%;
+    background-color: rgb(233, 188, 24);
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clubContent {
+    display: flex;
+    height: 88%;
+    background-image: url('../../assets/note.png');
+    background-size: 95%;
+    background-position: center;
+    background-blend-mode: overlay;
+    padding: 0px 0px 0px 10px;
+    align-items: start;
+    overflow: scroll;
+}
+
+.clubContent p, .clubHeader p {
+    margin: 0;
+}
+
+.clubContent p {
+    line-height: 1.5;
+    word-wrap: break-word;
+    width: 100%;
 }
