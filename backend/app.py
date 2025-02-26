@@ -3,7 +3,7 @@ File: app.py
 Description: Backend Flask application for club tracking system
 Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 02/25/2025 - (M) Add delete_club() function
+Revised: 02/25/2025 - (M) Add function that returns all of the clubs a user is part of
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -375,7 +375,7 @@ def delete_club(current_user, club_id):
     
     try:
         # (M) TODO later: delete all related records first (events, expenses, etc.) before deleting club itself
-        # Delete all club users
+        # (M) Delete all club users
         ClubUser.query.filter_by(Club_ID=club_id).delete()
 
         # (M) Delete the club itself
@@ -388,6 +388,39 @@ def delete_club(current_user, club_id):
         # (M) Roll back transaction on error
         db.session.rollback()
         return jsonify({'error': f'Failed to delete club: {str(e)}'}), 500
+
+@app.route('/my-clubs', methods=['GET'])
+@token_required
+def get_user_clubs(current_user):
+    """
+    (M) Gets all of the clubs that the current user is a part of.
+
+    This data will be used to populate all of the clubs on the user homepage/landing page,
+    hence why we only return club_id, name, and is_admin.
+
+    Returns:
+        - JSON response with success/error message and status code
+    """
+    try:
+        # (M) Query for all clubs where the user is a member
+        clubs_query = db.session.query(Club, ClubUser).join(
+            ClubUser, Club.Club_ID == ClubUser.Club_ID
+        ).filter(ClubUser.User_ID == current_user.User_ID).all()
+        
+        # (M) Format the results
+        clubs_list = [{
+            'club_id': club.Club.Club_ID,
+            'name': club.Club.Club_Name,
+            'is_admin': club.ClubMember.Admin
+        } for club in clubs_query]
+        
+        return jsonify({
+            'clubs': clubs_list,
+            'count': len(clubs_list)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 def drop_all_tables():
     """
@@ -410,7 +443,7 @@ def drop_all_tables():
 if __name__ == '__main__':
     # (M) Initialize database tables
     with app.app_context():
-        #drop_all_tables()  # (M) !!! DANGER: Removes all data from database !!! Use with caution when testing!!!
+        # drop_all_tables()  # (M) !!! DANGER: Removes all data from database !!! Use with caution when testing!!!
         db.create_all()  # (M) Create fresh database tables
 
     # (M) Start Flask development server
