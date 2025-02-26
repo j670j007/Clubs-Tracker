@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@400;500&display=swap');
+
+#landingDiv {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-image: url('../../assets/pattern.png');
+    background-size: 50%;
+    background-position: center;
+}
+
+#innerDiv {
+    height: 97%;
+    width: 98%;
+    align-self: center;
+    border-radius: 50px;
+}
+
+#landingPage {
+    background-color: white;
+    display: flex;
+    padding: 10px 40px;
+    height: 90%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);}
+
+#navBar {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+#navBar li {
+    color: #0051BA;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0 20px;
+    display: inline-block;
+    border-right: 1px solid #0051BA;
+    font-family: 'Playfair Display', serif;
+}
+
+#navBar #end {
+    border-right: 0px none;
+}
+
+#navBar img {
+    max-width: 55px;
+    max-height: 55px;
+    padding-left: 20px;
+}
