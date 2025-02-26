@@ -55,41 +55,42 @@ function Login() {
     };
     // (A) this is just HTML
     return (
-        <div className="loginForm">
-            <div id="topHeader">        
-                <h1> Welcome </h1>
-                <h3> Please enter your details to sign in </h3>
-            </div>
-            <div id="submission">
-                <form onSubmit={handleSubmit}>
-                    <div><label htmlFor="email">Username</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    {error && <p className="error-message">{error}</p>}
-                    <button type="submit">Sign In</button>
-                </form>
-            </div>
-            <div id="signUp">
-                <h3> Don't have an account? <a href="/register">Sign Up</a></h3>
+        <div id="fixDiv">
+            <div className="loginForm">
+                <div id="topHeader">        
+                    <h1> Welcome </h1>
+                    <h3> Please enter your details to sign in </h3>
+                </div>
+                <div id="submission">
+                    <form onSubmit={handleSubmit}>
+                        <div><label htmlFor="email">Username</label>
+                            <input
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        {error && <p className="error-message">{error}</p>}
+                        <button type="submit">Sign In</button>
+                    </form>
+                </div>
+                <div id="signUp">
+                    <h3> Don't have an account? <a href="/register">Sign Up</a></h3>
+                </div>
             </div>
         </div>
-
     );
 };
 

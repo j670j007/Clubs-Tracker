@@ -63,66 +63,68 @@ function Register () {
     
     // this is just HTML
     return ( 
-        <div className="registerForm">
-            <div>
-                <h1>Create Account</h1>
-            </div>
-            <div>
-                <form onSubmit={handleSubmit}>
-                    <div id="names">
-                        <input
-                            type="text"
-                            name="firstName"
-                            placeholder="First Name"
-                            value={formData.firstName}
-                            onChange={handleChange}
-                            required
-                        />  
-                        <input
-                            type="text"
-                            name="lastName"
-                            placeholder="Last Name"
-                            value={formData.lastName}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <input
-                            type="text"
-                            name="username"
-                            placeholder="Username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="Password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    {error && <p className="error-message">{error}</p>}
-                    <button type="submit">Register</button>
-                </form>
-            </div>
-            <div className="login">
-                <p>Already have an account? <a href="/login">Login here</a></p>
+        <div id="fixDiv">
+            <div className="registerForm">
+                <div>
+                    <h1>Create Account</h1>
+                </div>
+                <div>
+                    <form onSubmit={handleSubmit}>
+                        <div id="names">
+                            <input
+                                type="text"
+                                name="firstName"
+                                placeholder="First Name"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                required
+                            />  
+                            <input
+                                type="text"
+                                name="lastName"
+                                placeholder="Last Name"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="text"
+                                name="username"
+                                placeholder="Username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        {error && <p className="error-message">{error}</p>}
+                        <button type="submit">Register</button>
+                    </form>
+                </div>
+                <div className="login">
+                    <p>Already have an account? <a href="/login">Login here</a></p>
+                </div>
             </div>
         </div>
     );

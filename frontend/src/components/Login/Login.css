@@ -1,6 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@400;500&display=swap');
 
+#fixDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
 .loginForm {
+    align-items: center;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -12,7 +21,6 @@
     outline-color: gray;
     max-width: 600px;
     background-color: rgba(255, 255, 255, 0.957);
-    
 }
 
 .loginForm div {
