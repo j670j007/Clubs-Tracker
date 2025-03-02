@@ -70,23 +70,26 @@ function Landing() {
     };
 
     const handleDelete = async (id) => {
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/clubs/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-
-            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
-
-            console.log(response.message);
-            fetchUserClubs();
-            return true;
-        } catch (error) {
-            console.error(error);
-            return false;
+        const userInput = prompt("Are you sure you want to delete this club?");
+        if (["yes", "y"].includes(userInput.toLowerCase().trim())){
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/clubs/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+    
+                console.log(response.message);
+                fetchUserClubs();
+                return true;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
         }
     }
 
