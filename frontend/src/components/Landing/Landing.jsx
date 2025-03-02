@@ -39,7 +39,7 @@ function Landing() {
                 <div id="navBar">
                     <img src={logo}></img>
                     <ul>
-                        <li onClick={navigate('/dashboard')}>Home</li>
+                        <li onClick={() => navigate('/dashboard')}>Home</li>
                         <li>Create Club</li>
                         <li id="end" onClick={handleLogout}>Logout</li>
                     </ul>
