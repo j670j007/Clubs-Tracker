@@ -17,7 +17,7 @@ Error Conditions:
 - N/A
 */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import './Landing.css';
 import { useAuth } from '../../context/AuthContext';
@@ -32,6 +32,10 @@ function Landing() {
 
     const { user, logout } = useAuth();
 
+    useEffect(() => {
+        fetchUserClubs();
+    }, []);
+
     const fetchUserClubs = async () => {
         try {
             const response = await fetch('http://127.0.0.1:5000/my-clubs', {
@@ -39,11 +43,15 @@ function Landing() {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: user
+                }
             });
 
+            const data = await response.json();
+
             if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+            setClubs(data.clubs);
+            console.log(data.clubs);
+
             console.log(response.message);
             return true;
         } catch (error) {
