@@ -411,7 +411,8 @@ def get_user_clubs(current_user):
         clubs_list = [{
             'club_id': club.Club.Club_ID,
             'name': club.Club.Club_Name,
-            'is_admin': club.ClubMember.Admin
+            'is_admin': club.ClubUser.Admin,
+            'club_desc': club.Club.Club_Desc
         } for club in clubs_query]
         
         return jsonify({
