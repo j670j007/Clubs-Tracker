@@ -69,6 +69,27 @@ function Landing() {
         }
     };
 
+    const handleDelete = async (id) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
+            console.log(response.message);
+            fetchUserClubs();
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    }
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -109,7 +130,7 @@ function Landing() {
                                 <div key={club.club_id} className="clubNote">
                                     <div className="clubHeader">
                                         {club.is_admin ? (<p className="adminCheck">Admin</p>) : (<p>Member</p>)}
-                                        {club.is_admin && (<p className="adminDelete" onClick={handleDelete}>X</p>)}
+                                        {club.is_admin && (<p className="adminDelete" onClick={() => (handleDelete(club.club_id))}>X</p>)}
                                     </div>
                                     <div className="clubContent">
                                         <p className="clubName">{club.name}</p>
