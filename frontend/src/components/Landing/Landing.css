@@ -21,10 +21,10 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background: linear-gradient(135deg, #ffffff, #f8f8f8, rgba(255, 255, 255, 0.971));
 }
 
 #landingPage {
-    background-color: white;
     display: flex;
     height: 100%;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -49,8 +49,6 @@
     justify-content: space-between;
     padding-top: 10px;
     border-radius: 10px 10px 0 0;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    background-color: white;
 }
 
 #navBar li {
@@ -69,13 +67,13 @@
 
 #navBar #end {
     border-right: 0px none;
-    padding-right: 25px;
+    padding-right: 35px;
 }
 
 #navBar img {
-    max-width: 55px;
-    max-height: 55px;
-    padding-left: 20px;
+    max-width: 80px;
+    max-height: 80px;
+    padding: 20px 0 0 41px;
 }
 
 .clubNote {

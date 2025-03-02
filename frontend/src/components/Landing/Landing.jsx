@@ -71,7 +71,7 @@ function Landing() {
 
     const handleDelete = async (id) => {
         const userInput = prompt("Are you sure you want to delete this club?");
-        if (["yes", "y"].includes(userInput.toLowerCase().trim())){
+        if (["yes", "y"].includes(userInput.toLowerCase().trim())) {
             try {
                 const response = await fetch(`http://127.0.0.1:5000/clubs/${id}`, {
                     method: 'DELETE',
@@ -80,9 +80,9 @@ function Landing() {
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 });
-                
+
                 if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
-    
+
                 console.log(response.message);
                 fetchUserClubs();
                 return true;
