@@ -34,6 +34,9 @@ function CreateClub({ onClose, onSubmit }) {
                     invite_code: formData.code
                 }),
             });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
             console.log(response.message);
             onSubmit();
             return true;
