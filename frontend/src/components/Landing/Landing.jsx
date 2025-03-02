@@ -123,7 +123,7 @@ function Landing() {
                     {loading ? (
                         <p className="loading">Loading your clubs...</p>
                     ) : clubs.length === 0 ? (
-                        <p className="no-clubs">You don't have any clubs yet.</p>
+                        <p className="noClubs">You don't have any clubs yet.</p>
                     ) : (
                         <div id="clubsList">
                             {clubs.map(club => (

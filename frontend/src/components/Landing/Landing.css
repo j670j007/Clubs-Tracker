@@ -171,3 +171,7 @@
 .adminCheck {
     font-size: 12px;
 }
+
+.loading, .noClubs {
+    padding-left: 80px;
+}
