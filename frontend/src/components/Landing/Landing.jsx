@@ -105,7 +105,7 @@ function Landing() {
                     ) : (
                         <div id="clubsList">
                             {clubs.map(club => (
-                                <div key={club.id} className="clubNote">
+                                <div key={club.club_id} className="clubNote">
                                     <div className="clubHeader">
                                         <p>{club.name}</p>
                                     </div>
