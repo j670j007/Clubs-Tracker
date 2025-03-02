@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './CreateClub.css';
 
-function CreateClub() {
+function CreateClub({ onClose, onSubmit }) {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -34,7 +34,8 @@ function CreateClub() {
                     invite_code: formData.code
                 }),
             });
-            onSuccess(console.log(response.message));
+            console.log(response.message);
+            onSubmit();
             return true;
         } catch (error) {
             setError(error);
@@ -47,7 +48,7 @@ function CreateClub() {
             <div className="moduleForm">
                 <div className="formHeader">
                     <h2>Create New Club</h2>
-                    <button className="close">&times;</button>
+                    <button className="close" onClick={onClose}>&times;</button>
                 </div>
                 <div className="body">
                     <form onSubmit={handleSubmit}>
@@ -81,9 +82,9 @@ function CreateClub() {
                             />
                             <small>Members will use this code to join your club</small>
                         </div>
-                        {error && <p className="errorMsg">{error}</p>}
+                        {error && <p className="errorMsg">{`${error}`}</p>}
                         <div className="formBottom">
-                            <button type="button" className="cancel">Cancel</button>
+                            <button type="button" className="cancel" onClick={onClose}>Cancel</button>
                             <button type="submit" className="submit">Submit</button>
                         </div>
                     </form>

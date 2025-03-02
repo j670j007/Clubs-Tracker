@@ -17,21 +17,28 @@ Error Conditions:
 - N/A
 */
 
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import './Landing.css';
 import { useAuth } from '../../context/AuthContext';
 
 import logo from "../../assets/logo.svg"
-
+import CreateClub from "../CreateClub/CreateClub"
 
 function Landing() {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+    const [showCreateClub, setShowCreateClub] = useState(false);
+
     const { logout } = useAuth();
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
+
+    const handleClubSubmission = () => {
+        setShowCreateClub(false);
+    }
 
     return (
         <div id="landingDiv">
@@ -40,7 +47,7 @@ function Landing() {
                     <img src={logo}></img>
                     <ul>
                         <li onClick={() => navigate('/dashboard')}>Home</li>
-                        <li>Create Club</li>
+                        <li onClick={() => setShowCreateClub(true)}>Create Club</li>
                         <li id="end" onClick={handleLogout}>Logout</li>
                     </ul>
                 </div>
@@ -53,6 +60,8 @@ function Landing() {
                             <p>as duiasdhaisdhusad</p>
                         </div>
                     </div>*/}
+                    {showCreateClub && 
+                    <CreateClub onClose={() => setShowCreateClub(false)} onSubmit={handleClubSubmission}></CreateClub>}
                 </div>
             </div>
         </div>
