@@ -98,8 +98,26 @@ function Landing() {
                             <p>as duiasdhaisdhusad</p>
                         </div>
                     </div>*/}
-                    {showCreateClub && 
-                    <CreateClub onClose={() => setShowCreateClub(false)} onSubmit={handleClubSubmission}></CreateClub>}
+                    {loading ? (
+                        <p className="loading">Loading your clubs...</p>
+                    ) : clubs.length === 0 ? (
+                        <p className="no-clubs">You don't have any clubs yet.</p>
+                    ) : (
+                        <div id="clubsList">
+                            {clubs.map(club => (
+                                <div key={club.id} className="clubNote">
+                                    <div className="clubHeader">
+                                        <p>{club.name}</p>
+                                    </div>
+                                    <div className="clubContent">
+                                        <p>{club.club_desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {showCreateClub &&
+                        <CreateClub onClose={() => setShowCreateClub(false)} onSubmit={handleClubSubmission}></CreateClub>}
                 </div>
             </div>
         </div>
