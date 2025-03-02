@@ -29,6 +29,7 @@ function Landing() {
     const navigate = useNavigate();
     const [showCreateClub, setShowCreateClub] = useState(false);
     const [clubs, setClubs] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const { user, logout } = useAuth();
 
@@ -36,7 +37,13 @@ function Landing() {
         fetchUserClubs();
     }, []);
 
+    /*
+    useEffect(() => {
+        console.log('Clubs updated:', clubs);
+      }, [clubs]); testing to see if clubs are being updated */
+
     const fetchUserClubs = async () => {
+        setLoading(true);
         try {
             const response = await fetch('http://127.0.0.1:5000/my-clubs', {
                 method: 'GET',
@@ -57,6 +64,8 @@ function Landing() {
         } catch (error) {
             console.error(error);
             return false;
+        } finally {
+            setLoading(false);
         }
     };
 
