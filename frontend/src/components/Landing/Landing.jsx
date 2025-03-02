@@ -75,6 +75,7 @@ function Landing() {
     };
 
     const handleClubSubmission = () => {
+        fetchUserClubs();
         setShowCreateClub(false);
     }
 
@@ -107,10 +108,11 @@ function Landing() {
                             {clubs.map(club => (
                                 <div key={club.club_id} className="clubNote">
                                     <div className="clubHeader">
-                                        <p>{club.name}</p>
+                                        {club.is_admin && <p className="adminCheck">Admin</p>}
                                     </div>
                                     <div className="clubContent">
-                                        <p>{club.club_desc}</p>
+                                        <p className="clubName">{club.name}</p>
+                                        <p className="clubDesc">{club.club_desc}</p>
                                     </div>
                                 </div>
                             ))}
