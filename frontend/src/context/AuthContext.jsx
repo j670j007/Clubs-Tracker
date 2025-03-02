@@ -49,12 +49,12 @@ export const AuthProvider = ({ children }) => { // (A) create a context provider
         }
     };
 
-    /*
+
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userData');
         setUser(null);
-    }; For SPRINT 2*/
+    };
 
     const register = async (userData) => { // (A) register function
         try {
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => { // (A) create a context provider
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register }}> {/** (A) Make the context's listed values available to children */}
+        <AuthContext.Provider value={{ user, login, register, logout }}> {/** (A) Make the context's listed values available to children */}
             {children}
         </AuthContext.Provider>
     );

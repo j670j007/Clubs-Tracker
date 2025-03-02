@@ -19,22 +19,29 @@ Error Conditions:
 
 import { useNavigate } from 'react-router-dom';
 import './Landing.css';
+import { useAuth } from '../../context/AuthContext';
 
 import logo from "../../assets/logo.svg"
 
 
 function Landing() {
-    const navigate = useNavigate(); // for future use 
-    // right now this is just a WIP, empty (for sprint 2)
+    const navigate = useNavigate(); 
+    const { logout } = useAuth();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
     return (
         <div id="landingDiv">
             <div id="innerDiv">
                 <div id="navBar">
                     <img src={logo}></img>
                     <ul>
-                        <li>Home</li>
+                        <li onClick={navigate('/dashboard')}>Home</li>
                         <li>Create Club</li>
-                        <li id="end">Logout</li>
+                        <li id="end" onClick={handleLogout}>Logout</li>
                     </ul>
                 </div>
                 <div id="landingPage">

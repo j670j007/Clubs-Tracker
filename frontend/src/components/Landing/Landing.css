@@ -50,6 +50,10 @@
     font-family: 'Playfair Display', serif;
 }
 
+#navBar li:hover{
+    cursor: pointer;
+}
+
 #navBar #end {
     border-right: 0px none;
 }
