@@ -43,7 +43,52 @@ function CreateClub() {
     };
 
     return (
-        <div>
+        <div className="moduleBackground">
+            <div className="moduleForm">
+                <div className="formHeader">
+                    <h2>Create New Club</h2>
+                    <button className="close">&times;</button>
+                </div>
+                <div className="body">
+                    <form onSubmit={handleSubmit}>
+                        <div className="formBox">
+                            <label htmlFor="name">Club Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="formBox">
+                            <label htmlFor="description">Description</label>
+                            <textarea
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="formBox">
+                            <label htmlFor="code">Invite Code</label>
+                            <input
+                                type="text"
+                                name="code"
+                                value={formData.code}
+                                onChange={handleChange}
+                                required
+                            />
+                            <small>Members will use this code to join your club</small>
+                        </div>
+                        {error && <p className="errorMsg">{error}</p>}
+                        <div className="formBottom">
+                            <button type="button" className="cancel">Cancel</button>
+                            <button type="submit" className="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 }

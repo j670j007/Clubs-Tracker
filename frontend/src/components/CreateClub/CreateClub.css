@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Inter:wght@400;500&display=swap');
+
+.moduleBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.moduleForm {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.formHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.formHeader h2 {
+    font-family: 'Playfair Display', serif;
+    margin: 0;
+    font-size: 24px;
+}
+
+.close {
+    background: none;
+    padding: 8px 8px 8px 0;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.moduleForm .body {
+    padding: 20px;
+}
+
+.formBox {
+    margin-bottom: 20px;
+}
+
+.formBox label {
+    display: block;
+    margin-bottom: 8px;
+    font-family: 'Playfair Display', sans-serif;
+    font-size: 16px;
+}
+
+.formBox input,
+.formBox textarea {
+    min-width: 93%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+}
+
+.formBox input:focus,
+.formBox textarea:focus {
+    outline-width: 1px;
+    outline-style: solid;
+    outline-color: rgba(93, 93, 219, 0.5);
+    border-color: rgba(93, 93, 219, 0.5);
+}
+
+.formBox textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.formBox small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 12px;
+}
+
+.errorMsg {
+    color: #e53935;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.formBottom {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.cancel,
+.submit {
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Playfair Display', sans-serif;
+}
+
+.cancel {
+    background-color: transparent;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.cancel:hover {
+    background-color: #f5f5f5;
+}
+
+.submit {
+    background-color: rgba(93, 93, 219, 0.925);
+    border: none;
+    color: white;
+}
+
+.submit:hover {
+    background-color: rgba(93, 93, 219, 1);
+}
