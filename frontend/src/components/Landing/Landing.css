@@ -56,6 +56,7 @@
 
 #navBar #end {
     border-right: 0px none;
+    padding-right: 25px;
 }
 
 #navBar img {
