@@ -108,7 +108,8 @@ function Landing() {
                             {clubs.map(club => (
                                 <div key={club.club_id} className="clubNote">
                                     <div className="clubHeader">
-                                        {club.is_admin && <p className="adminCheck">Admin</p>}
+                                        {club.is_admin ? (<p className="adminCheck">Admin</p>) : (<p>Member</p>)}
+                                        {club.is_admin && (<p className="adminDelete" onClick={handleDelete}>X</p>)}
                                     </div>
                                     <div className="clubContent">
                                         <p className="clubName">{club.name}</p>

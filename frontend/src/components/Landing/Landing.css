@@ -14,9 +14,8 @@
 }
 
 #innerDiv {
-    height: 96%;
-    max-height: 96%;
-    width: 97%;
+    height: 97%;
+    width: 98%;
     align-self: center;
     border-radius: 30px;
     display: flex;
@@ -100,14 +99,33 @@
 .clubHeader {
     height: 8%;
     background-color: rgb(233, 188, 24);
-    padding-left: 10px;
+    padding: 0 7px 0 10px;
     display: flex;
+    justify-content: space-between;
 }
 
 .clubHeader p {
     font-family: 'Caveat', serif;
     font-size: 14px;
     color: white;
+}
+
+.clubHeader .adminDelete {
+    color: rgb(125, 29, 29);
+    background-color: rgb(125, 29, 29);
+    padding: 0px 3px 0px 3px;
+    align-self: center;
+    text-align: center;
+    border-radius: 50px;
+    font-size: 8px;
+}
+
+.clubHeader .adminDelete:hover {
+    color: rgb(255, 255, 255);
+    border-color: white;
+    border-style: groove;
+    border-width: 1px;
+    cursor: pointer;
 }
 
 .clubContent p {
