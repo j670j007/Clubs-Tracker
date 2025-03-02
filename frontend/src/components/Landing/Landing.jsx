@@ -28,8 +28,29 @@ import CreateClub from "../CreateClub/CreateClub"
 function Landing() {
     const navigate = useNavigate();
     const [showCreateClub, setShowCreateClub] = useState(false);
+    const [clubs, setClubs] = useState([]);
 
-    const { logout } = useAuth();
+    const { user, logout } = useAuth();
+
+    const fetchUserClubs = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/my-clubs', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: user
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+            console.log(response.message);
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    };
 
     const handleLogout = () => {
         logout();
