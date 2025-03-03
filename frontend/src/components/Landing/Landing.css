@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap');
 
 #landingDiv {
     width: 100%;
@@ -50,7 +51,7 @@
     flex-wrap: wrap;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 0.8fr));
-    gap: 20px 10px; 
+    gap: 20px 10px;
     overflow: auto;
     scrollbar-width: none;
 }
@@ -89,7 +90,7 @@
     gap: 20px;
 }
 
-#navBar li:hover{
+#navBar li:hover {
     cursor: pointer;
 }
 
@@ -118,12 +119,29 @@
     width: 80%;
     height: 80%;
     background-color: #fed98ff1;
+    /*
     box-shadow: 2px 2px 1px rgba(0, 0, 0, 0.1);
     border-style: groove;
     border-width: 0 1px 1px 0;
-    border-color: rgb(65, 165, 134);
+    border-color: rgb(65, 165, 134); */
     font-family: 'Playfair Display', sans-serif;
-    color: rgba(0, 0 , 0, 0.8);
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.clubNote::after {
+    content: "";
+    width: 30px;
+    align-self: flex-end;
+    height: 30px;
+    transition: all 0.3s ease-out;
+    z-index: 2;
+}
+
+.clubNote:hover::after {
+    background: linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.9) 50%);
+    box-shadow: -2px -2px 2px rgba(0, 0, 0, 0.2);
+    width: 45px;
+    height: 45px;
 }
 
 .clubHeader {
@@ -176,7 +194,8 @@
     gap: 8px;
 }
 
-.clubContent p, .clubHeader p {
+.clubContent p,
+.clubHeader p {
     margin: 0;
 }
 
@@ -202,6 +221,7 @@
     font-size: 12px;
 }
 
-.loading, .noClubs {
+.loading,
+.noClubs {
     padding-left: 80px;
 }
