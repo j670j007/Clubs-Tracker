@@ -2,19 +2,20 @@
 File: Landing.jsx
 Description: Landing page component
 Author(s): Anil Thapa
-Creation Date: 02/15/2025
+Creation Date: 02/15/2025, last mod: 03/02/2025
 
 Preconditions:
 - Vite application running
+- User has logged into the application
 
 Input Values:
-- N/A
+- Form data for creating a club, Yes/YES/Y/y to confirm deleting a club
 
 Return Values:
-- Plain text for WIP
+- Clubs of the current user-- deleted/created clubs
 
 Error Conditions:
-- N/A
+- User has logged out but returned back -- will fail the JWT test
 */
 
 import { useState, useEffect } from 'react'
@@ -26,16 +27,16 @@ import logo from "../../assets/logo.svg"
 import CreateClub from "../CreateClub/CreateClub"
 
 function Landing() {
-    const navigate = useNavigate();
-    const [showCreateClub, setShowCreateClub] = useState(false);
-    const [clubs, setClubs] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate(); // (A) useNavigate to move from page to page in a reactive fashion
+    const [showCreateClub, setShowCreateClub] = useState(false); // (A) create club state on whether or not the module is displayed
+    const [clubs, setClubs] = useState([]); // (A) current clubs of the current user 
+    const [loading, setLoading] = useState(true); // (A) loading frame while clubs isn't set until the next refresh cycle
 
-    const { user, logout } = useAuth();
+    const { logout } = useAuth(); // (A) logout function hooked from the authentication context
 
     useEffect(() => {
-        fetchUserClubs();
-    }, []);
+        fetchUserClubs(); 
+    }, []); // (A) on component render, fetch all clubs of the user
 
     /*
     useEffect(() => {
@@ -43,21 +44,21 @@ function Landing() {
       }, [clubs]); testing to see if clubs are being updated */
 
     const fetchUserClubs = async () => {
-        setLoading(true);
-        try {
+        setLoading(true); // (A) loading has begun -- set the state so it's rendered in the html as such
+        try { // (A) our api call to get clubs
             const response = await fetch('http://127.0.0.1:5000/my-clubs', {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Content-Type': 'application/json', // (A) specify our content type
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // (A) only the authorization token is required since backend parses user from the token
                 }
             });
 
-            const data = await response.json();
+            const data = await response.json(); // (A) after fetching, wait for the json to load
 
-            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
-            setClubs(data.clubs);
-            console.log(data.clubs);
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if response code is out of 200s, throw the error along with the status msg
+            setClubs(data.clubs); // (A) update the current state of the clubs
+            // console.log(data.clubs); debugging print
 
             console.log(response.message);
             return true;
@@ -65,14 +66,14 @@ function Landing() {
             console.error(error);
             return false;
         } finally {
-            setLoading(false);
+            setLoading(false); // (A) regardless of failure or success, lift the loading
         }
     };
 
-    const handleDelete = async (id) => {
-        const userInput = prompt("Are you sure you want to delete this club?");
-        if (["yes", "y"].includes(userInput.toLowerCase().trim())) {
-            try {
+    const handleDelete = async (id) => { // (A) function to handle deleting when clicking the button
+        const userInput = prompt("Are you sure you want to delete this club?"); // (A) prompt to check user input
+        if (["yes", "y"].includes(userInput.toLowerCase().trim())) { // (A) if a variation of yes or y, then start the deletion process
+            try { // (A) send a DELETE request to the club endpoint
                 const response = await fetch(`http://127.0.0.1:5000/clubs/${id}`, {
                     method: 'DELETE',
                     headers: {
@@ -81,10 +82,10 @@ function Landing() {
                     }
                 });
 
-                if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+                if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if status code is out of 200s, return the error
 
-                console.log(response.message);
-                fetchUserClubs();
+                console.log(response.message); // (A) log message for debugging purposes
+                fetchUserClubs(); // (A) fetch the new set of clubs since there might be an update
                 return true;
             } catch (error) {
                 console.error(error);
@@ -93,14 +94,14 @@ function Landing() {
         }
     }
 
-    const handleLogout = () => {
+    const handleLogout = () => { // (A) basic logout function using the logout() method hooked from the auth contexgt
         logout();
-        navigate('/login');
+        navigate('/login'); // (A) navigate back to login
     };
 
-    const handleClubSubmission = () => {
-        fetchUserClubs();
-        setShowCreateClub(false);
+    const handleClubSubmission = () => { // (A) basic function for the createclub component to hook onto upon submitting a creation request
+        fetchUserClubs(); // (A) fetch the new clubs if there were any
+        setShowCreateClub(false); // (A) close the module
     }
 
     return (
