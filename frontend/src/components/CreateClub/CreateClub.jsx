@@ -1,44 +1,65 @@
+/*
+File: CreateClub.jsx
+Description: Create club module component
+Author(s): Anil Thapa
+Creation Date: 03/02/2025
+
+Preconditions:
+- Vite application running
+- User has logged into the application
+
+Input Values:
+- Form data for creating a club
+
+Return Values:
+- Creation of a club
+
+Error Conditions:
+- User has logged out but returned back -- will fail the JWT test
+*/
+
+
 import { useState } from 'react';
 import './CreateClub.css';
 
-function CreateClub({ onClose, onSubmit }) {
-    const [formData, setFormData] = useState({
+function CreateClub({ onClose, onSubmit }) { // (A) use onclose and onsubmit hooked from parent component to handle diff situations
+    const [formData, setFormData] = useState({ // (A) state and forms of the expected form data when submitting a creation request
         name: '',
         description: '',
         code: ''
     });
 
-    const [error, setError] = useState('');
+    const [error, setError] = useState(''); // (A) error state to inform/keep track of 
 
-    const handleChange = (e) => {
+    const handleChange = (e) => { // (A) handle changes of the form data
         setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
+            ...formData, // (A) keep every other part of the current form data state the same
+            [e.target.name]: e.target.value // (A) except the one that was changed
         });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
+    const handleSubmit = async (e) => { // (A) submission handling function
+        e.preventDefault(); // (A) prevent the form from being used while processing
+        setError(''); // (A) clear the previous error while submitting the new request
 
-        try {
+        try { // (A) api call 
             const response = await fetch('http://127.0.0.1:5000/create_club', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // (A) POST with the jwt token
                 },
-                body: JSON.stringify({
+                body: JSON.stringify({ // (A) stringify a new object with the correct form names according to the backend
                     club_name: formData.name,
                     club_desc: formData.description,
                     invite_code: formData.code
                 }),
             });
 
-            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if outside of 200s, return the error or fault and msg
 
-            console.log(response.message);
-            onSubmit();
+            console.log(response.message); // (A) log the successful response msg for 
+            onSubmit(); // (A) use the hooked function to submit whatever needed
             return true;
         } catch (error) {
             setError(error);
