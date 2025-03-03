@@ -7,10 +7,20 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-image: url('../../assets/pattern.png');
+    overflow: hidden;
+    z-index: 0;
+}
+
+#blurFilter {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    filter: blur(1px);
+    overflow: hidden;
+    z-index: -1;
+    background-image: url('../../assets/jayhawks.png');
     background-size: 50%;
     background-position: center;
-    overflow: hidden;
 }
 
 #innerDiv {
@@ -21,7 +31,9 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: linear-gradient(135deg, #ffffff, #f8f8f8, rgba(255, 255, 255, 0.971));
+    background: linear-gradient(135deg, #ffffff, #f8f8f8);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
 }
 
 #landingPage {
@@ -32,7 +44,7 @@
 
 #clubsList {
     width: 90%;
-    padding: 60px 10px 60px 90px;
+    padding: 30px 10px 30px 90px;
     height: 100%;
     gap: 0px 40px;
     flex-wrap: wrap;
@@ -55,25 +67,45 @@
     color: #0051BA;
     text-decoration: none;
     font-weight: 600;
-    padding: 0 20px;
+    padding: 8px 15px 10px 15px;
     display: inline-block;
     border-right: 1px solid #0051BA;
     font-family: 'Playfair Display', serif;
+}
+
+#navBar h1 {
+    font-size: 36px;
+    font-family: 'Playfair Display', sans-serif;
+    color: #395a85;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: #100f0d;
+    padding: 15px 650px 25px 20px;
+}
+
+#navBar .leftHeader {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
 }
 
 #navBar li:hover{
     cursor: pointer;
 }
 
+#navBar #start {
+    padding-left: 20px;
+}
+
 #navBar #end {
     border-right: 0px none;
-    padding-right: 35px;
+    margin-right: 35px;
 }
 
 #navBar img {
     max-width: 80px;
     max-height: 80px;
-    padding: 20px 0 0 41px;
+    padding: 20px 0 20px 41px;
 }
 
 .clubNote {

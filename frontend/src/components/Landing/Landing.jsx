@@ -105,11 +105,15 @@ function Landing() {
 
     return (
         <div id="landingDiv">
+            <div id="blurFilter"></div>
             <div id="innerDiv">
                 <div id="navBar">
-                    <img src={logo}></img>
+                    <div className="leftHeader">
+                        <img src={logo}></img>
+                        <h1>Club Manager</h1>
+                    </div>
                     <ul>
-                        <li onClick={() => navigate('/dashboard')}>Home</li>
+                        <li id="start" onClick={() => navigate('/dashboard')}>Home</li>
                         <li onClick={() => setShowCreateClub(true)}>Create Club</li>
                         <li id="end" onClick={handleLogout}>Logout</li>
                     </ul>
