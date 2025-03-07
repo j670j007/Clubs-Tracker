@@ -313,6 +313,10 @@ def create_club(current_user):
     for field in required_fields:
         if field not in data:
             return jsonify({'error': f'Missing required field: {field}'}), 400
+
+    # (M) Check if a club with the same name already exists
+    if Club.query.filter_by(Club_Name=data['club_name']).first():
+        return jsonify({'error': 'Club name already exists'}), 400
            
     try:
         # (M) Create new club object
