@@ -12,7 +12,7 @@ We decided that our team project for this semester will be a club tracker app.  
 The majority of the meeting was spent working on the requirements document.  We came up with 20 different requirements, and assigned story points for each.  The requirements were a combination of front-end and backend items.  
 
 We decided tentatively on meeting weekly via Zoom at 6:00 p.m. on Tuesdays, but this is subject to change if the time doesn't work for everyone.  
-
+--------------------------------------------------------------------------------------------------------------------------------------------------
 Weekly team meeting 2/4/25:
 
 In attendance:  Amil, Jennifer, Justin, and Michelle
@@ -34,7 +34,7 @@ We discussed Sprint 1.  All the database tables are added for that, then the use
 We divided up the work on the artifacts, with Jennifer doing the database portion and Anil, Elizabeth, Michelle, and Justin completing the remaining items.    
 
 We will need to ask a few questions of the TA, with regards to whether the requirements list is set in stone.  Also what is acceptable for the documentation to turn in Sunday.  
-
+--------------------------------------------------------------------------------------------------------------------------------------------------
 Weekly team meeting 2/7/25:
 
 In attendance:  Amil, Elizabeth, Jennifer, Justin, Michelle 
@@ -52,7 +52,7 @@ Justin will step in as needed.
 Anil said when we are doing source control, try to do our own branch, then push to Main for final release. 
 
 We won't be having a meeting on Tuesday.  We are going to meet Thursday at 6:00 for the Sprint 2 deliverables.  
-
+-----------------------------------------------------------------------------------------------------------------------------------------------
 Weekly team meeting 2/13/25:
 
 In attendance:  Anil, Jennifer, Justin, Michelle
@@ -62,7 +62,7 @@ We discussed what we needed to do to wrap up sprint 1, and divided up work on th
 We will need to refactor some of Elizabeth's backend code to work with the database, but other than that we have everything we need for this week's devliverable.
 
 Next meeting is on Tuesday.  
-
+-----------------------------------------------------------------------------------------------------------------------------------------------
 Weekly team meeting:  2/18/25 
 
 In attendance:  Anil, Elizabeth, Jennifer, Justin, Michelle
@@ -81,7 +81,7 @@ Michelle built test_app.py - Programmers can make test cases, will print output 
 We started talking about what we wanted to do for sprint 3. We decided on Leave a club and Join a club. Elizabeth will handle the artifacts.  Deliverables are due on Mar. 2. 
 
 Michelle will e-mail the TA about our snow day meeting.  
-
+----------------------------------------------------------------------------------------------------------------------------------------------
 Weekly team meeting: 2/25/25
 
 In attendance:  Anil, Elizabeth, Jennifer, Justin, Michelle
@@ -97,7 +97,7 @@ Jennifer:  Leave a club
 Elizabeth: Artifacts
 
 We're going to wait until next meeting to discuss the video presentation.  Next meeting will be Tuesday, @ same time. 
-
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 Weekly team meeting 3/4/25:
 
 In attendance:  Anil, Elizabeth, Jennifer, Justin, Michelle
@@ -117,6 +117,15 @@ Anil said we would set up a Google Doc with talking points, and each person can 
 
 For introduction, we can record our name, as well as a more formal introduction.  
 Visually, we'll just have a blank page while we go over the introduction.  
+
+Weekly team meeting: 3/11/25
+---------------------------------------
+In attendance:  Anil, Elizabeth, Jennifer, Justin, Michelle
+
+This meeting was pretty brief. We discussed deliverables for Sprint 4 (due after this upcoming sprint).  Michelle and Elizabeth will do the backend portion, and Justin and Anil will do the frontend.  Jennifer will take care of artifacts.  
+
+Join a club and leave a club are outstanding backend items due on 3/16.
+--------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
