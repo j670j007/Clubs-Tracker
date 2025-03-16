@@ -140,7 +140,7 @@ function Landing() {
                                         {club.is_admin ? (<p className="adminCheck">Admin</p>) : (<p>Member</p>)}
                                         {club.is_admin && (<p className="adminDelete" onClick={() => (handleDelete(club.club_id))}>X</p>)}
                                     </div>
-                                    <div className="clubContent">
+                                    <div className="clubContent" onClick={() => navigate(`/clubs/${club.club_id}`)}>
                                         <p className="clubName">{club.name}</p>
                                         <p className="clubDesc">{club.club_desc}</p>
                                     </div>
