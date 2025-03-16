@@ -449,35 +449,28 @@ def join_club(current_user):  # (M) Pass in the current_user to indicate which u
     data = request.get_json()
     
     # (M) Check for required fields
-    if 'club_id' not in data:
-        return jsonify({'error': 'Missing required club_id field'}), 400
-    
     if 'invite_code' not in data:
         return jsonify({'error': 'Missing required invite_code field'}), 400
         
+    # (M) Find the club by invite code
+    club = Club.query.filter_by(Invite_Code=data['invite_code']).first()
+    if not club:
+        return jsonify({'error': 'Club not found. Invalid invite code'}), 404
+    
     # (M) Check if user is already a member
     existing_member = ClubUser.query.filter_by(
-        Club_ID=data['club_id'],
+        Club_ID=club.Club_ID,
         User_ID=current_user.User_ID
     ).first()
     
     if existing_member:
         return jsonify({'error': 'User is already a member of this club'}), 400
-    
-    # (M) Check if the club exists
-    club = Club.query.get(data['club_id'])
-    if not club:
-        return jsonify({'error': 'Club not found'}), 404
-    
-    # (M) Validate invite code
-    if club.Invite_Code != data['invite_code']:
-        return jsonify({'error': 'Invalid invite code'}), 403
         
     try:
         new_member = ClubUser(
-            Club_ID=data['club_id'],
+            Club_ID=club.Club_ID,
             User_ID=current_user.User_ID,
-            Club_User_Date_Added=datetime.now().date(),
+            Club_Member_Date_Added=datetime.now().date(),
             Admin=False  # (M) New members are not admins by default
         )
         db.session.add(new_member)
