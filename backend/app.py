@@ -423,6 +423,49 @@ def get_user_clubs(current_user):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/clubs/<int:club_id>', methods=['GET'])
+@token_required
+def get_club(current_user, club_id):
+    """
+    Get detailed information about a specific club
+    
+    Returns:
+        - JSON response with club details
+        
+    Error conditions:
+        - Club does not exist (404)
+        - User is not a member of the club (403)
+    """
+    # (A) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (A) Check if user is a member of the club
+    is_member = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID
+    ).first()
+    
+    if not is_member:
+        return jsonify({'error': 'Permission denied. You must be a member to view club details'}), 403
+    
+    try:
+        # (A) Get club information
+        club_data = {
+            'club_id': club.Club_ID,
+            'name': club.Club_Name,
+            'description': club.Club_Desc,
+            'date_added': club.Date_Added.strftime('%Y-%m-%d'),
+            'invite_code': club.Invite_Code,
+            'is_admin': is_member.Admin
+        }
+        
+        return jsonify(club_data), 200
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def drop_all_tables():
     """
     (M) Custom function to safely drop all tables, handling foreign key constraints.
