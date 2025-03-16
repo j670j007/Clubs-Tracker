@@ -69,6 +69,33 @@ function ClubPage() {
         }
     }
 
+    const handleLeave = async (id) => {
+        const userInput = prompt("Are you sure you want to leave this club?"); // (A) prompt to check user input
+        if (["yes", "y"].includes(userInput.toLowerCase().trim())) { // (A) if a variation of yes or y, then start the leave process
+            try { // (A) our api call to get clubs
+                const response = await fetch('http://127.0.0.1:5000/leave_club', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json', // (A) specify our content type
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // (A) only the authorization token is required since backend parses user from the token
+                    },
+                    body: JSON.stringify({ // (A) stringify a new object with the correct form names according to the backend
+                        club_id: id
+                    })
+                });
+
+                if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if response code is out of 200s, throw the error along with the status msg
+                fetchUserClubs(); // (A) update clubs again
+
+                console.log(response.message);
+                return true;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        }
+    };
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -119,13 +146,20 @@ function ClubPage() {
                     <div className="clubCard">
                         <h2>About this Club</h2>
                         <p className="clubDescription">{clubData.description}</p>
-                        {clubData.is_admin && (
+                        {(clubData.is_admin) ? (
                             <div className="adminSection">
                                 <h3>Admin Information</h3>
                                 <div className="adminActions">
                                     <button className="editButtonA">Edit Club</button>
                                     <button className="manageButtonA">Manage Members</button>
-                                    {clubData.is_admin && (<button className="manageDeleteA" onClick={() => (handleDelete(clubId))}>Delete</button>)}
+                                    <button className="manageDeleteA" onClick={() => (handleDelete(clubId))}>Delete</button>
+                                    <button className="manageLeaveA" onClick={() => (handleLeave(clubId))}>Leave</button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="memberSection">
+                                <div className="memberActions">
+                                    <button className="manageLeaveM" onClick={() => (handleLeave(clubId))}>Leave</button>
                                 </div>
                             </div>
                         )}

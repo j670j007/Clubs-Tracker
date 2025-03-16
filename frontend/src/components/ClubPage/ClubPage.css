@@ -154,6 +154,21 @@
     border: none;
 }
 
+.memberActions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.memberActions button {
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'Playfair Display', sans-serif;
+    cursor: pointer;
+    border: none;
+}
+
 .editButtonA {
     background-color: #f0f0f0;
     color: #333;
@@ -163,7 +178,7 @@
     background-color: #e0e0e0;
 }
 
-.manageButtonA{
+.manageButtonA {
     background-color: rgba(93, 93, 219, 0.925);
     color: white;
 }
@@ -172,12 +187,33 @@
     background-color: rgba(93, 93, 219, 1);
 }
 
-.manageDeleteA{
-    background-color: rgba(196, 83, 38, 0.925);
+.adminActions .manageDeleteA {
+    background-color: rgba(199, 56, 0, 0.925);
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(255, 0, 0);
     color: white;
 }
 
 .manageDeleteA:hover {
+    background-color: rgb(255, 46, 4);
+}
+
+.manageLeaveA {
+    background-color: rgba(196, 83, 38, 0.925);
+    color: white;
+}
+
+.manageLeaveA:hover {
+    background-color: rgb(113, 30, 13);
+}
+
+.manageLeaveM {
+    background-color: rgba(196, 83, 38, 0.925);
+    color: white;
+}
+
+.manageLeaveM:hover {
     background-color: rgb(113, 30, 13);
 }
 
