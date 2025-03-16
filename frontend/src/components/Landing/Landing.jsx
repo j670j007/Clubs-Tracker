@@ -35,7 +35,7 @@ function Landing() {
     const { logout } = useAuth(); // (A) logout function hooked from the authentication context
 
     useEffect(() => {
-        fetchUserClubs(); 
+        fetchUserClubs();
     }, []); // (A) on component render, fetch all clubs of the user
 
     /*
@@ -70,6 +70,30 @@ function Landing() {
         }
     };
 
+    const joinClub = async (code) => {
+        try { // (A) our api call to get clubs
+            const response = await fetch('http://127.0.0.1:5000/join_club', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // (A) specify our content type
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // (A) only the authorization token is required since backend parses user from the token
+                },
+                body: JSON.stringify({ // (A) stringify a new object with the correct form names according to the backend
+                    invite_code: code
+                })
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if response code is out of 200s, throw the error along with the status msg
+            fetchUserClubs(); // (A) update clubs again
+
+            console.log(response.message);
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
+    };
+
     const handleLogout = () => { // (A) basic logout function using the logout() method hooked from the auth contexgt
         logout();
         navigate('/login'); // (A) navigate back to login
@@ -92,6 +116,7 @@ function Landing() {
                     <ul>
                         <li id="start" onClick={() => navigate('/dashboard')}>Home</li>
                         <li onClick={() => setShowCreateClub(true)}>Create Club</li>
+                        <li onClick={() => joinClub(prompt("Enter club code:"))}>Join Club</li>
                         <li id="end" onClick={handleLogout}>Logout</li>
                     </ul>
                 </div>
