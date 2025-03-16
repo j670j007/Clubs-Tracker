@@ -493,7 +493,7 @@ def leave_club(current_user):
         - JSON response with success/error message and status code
         
     Error conditions:
-        - Missing club_id, invite code field (400)
+        - Missing club_id (400)
         - User not a member of the club (400)
         - Club not found (404)
     """
@@ -519,11 +519,7 @@ def leave_club(current_user):
         return jsonify({'error': 'Club not found'}), 404
 
     try:
-        current_member = ClubUser(
-            Club_ID=data['club_id'],
-            User_ID=current_user.User_ID,
-        )
-        db.session.delete(current_member)
+        db.session.delete(existing_member)
         db.session.commit()
         return jsonify({'message': 'Successfully left club'}), 201
     except Exception as e:
