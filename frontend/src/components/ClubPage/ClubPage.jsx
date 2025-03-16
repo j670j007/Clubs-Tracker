@@ -1,3 +1,25 @@
+/*
+File: ClubPage.jsx
+Description: Club view
+Author(s): Anil Thapa
+Creation Date: 03/02/2025
+
+Preconditions:
+- Vite application running
+- User has logged into the application
+- User is in the club
+
+Input Values:
+- Club id in the url
+
+Return Values:
+- Club dashboard
+
+Error Conditions:
+- N/A so far
+*/
+
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -6,21 +28,21 @@ import './ClubPage.css';
 import logo from "../../assets/logo.svg";
 
 function ClubPage() {
-    const { clubId } = useParams();
-    const navigate = useNavigate();
-    const { logout } = useAuth();
-    const [clubData, setClubData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const { clubId } = useParams(); // (A) get the clubId from the link used 
+    const navigate = useNavigate(); // (A) use navigate to move between pages easier
+    const { logout } = useAuth(); // (A) get the logout function by hooking back to our authentication context
+    const [clubData, setClubData] = useState(null); // (A) state for club data when we call our backend
+    const [loading, setLoading] = useState(true); // (A) handle midway loads
+    const [error, setError] = useState(null); // (A) error checks
 
     useEffect(() => {
         fetchClubDetails();
-    }, [clubId]);
+    }, [clubId]); // (A) when clubId loads, fetch club information
 
     const fetchClubDetails = async () => {
-        setLoading(true);
+        setLoading(true); // (A) set our loading state to true, will show intermeditary html
         try {
-            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}`, {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}`, { // (A) send request with clubid in the link
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json', // (A) specify our content type
@@ -32,7 +54,7 @@ function ClubPage() {
             setClubData(data);
             setError(null);
         } catch (err) {
-            console.error("Error fetching club details:", err);
+            console.error("Error fetching club details:", err); // (A) responds accordingly to the status codes in the backend
             if (err.status === 403) {
                 setError("You don't have permission to view this club.");
             } else if (err.status === 404) {
@@ -41,7 +63,7 @@ function ClubPage() {
                 setError("An error occurred while fetching club details.");
             }
         } finally {
-            setLoading(false);
+            setLoading(false); // (A) loaded (real mem) or not, remove intermediatry 
         }
     };
 
@@ -95,16 +117,16 @@ function ClubPage() {
         }
     };
 
-    const handleLogout = () => {
+    const handleLogout = () => { // (A) handle logout, remove session, navigate back to login
         logout();
         navigate('/login');
     };
 
-    if (loading) {
+    if (loading) { // (A) login intermediatery html
         return <div className="loading">Loading club details...</div>;
     }
 
-    if (error) {
+    if (error) { // (A) in the case of an error, fill page with this
         return (
             <div className="error">
                 <h2>Error</h2>
@@ -114,7 +136,7 @@ function ClubPage() {
         );
     }
 
-    if (!clubData) {
+    if (!clubData) { // (A) if there is no club data, then give user response
         return (
             <div className="notFound">
                 <h2>Club Not Found</h2>
