@@ -70,30 +70,6 @@ function Landing() {
         }
     };
 
-    const handleDelete = async (id) => { // (A) function to handle deleting when clicking the button
-        const userInput = prompt("Are you sure you want to delete this club?"); // (A) prompt to check user input
-        if (["yes", "y"].includes(userInput.toLowerCase().trim())) { // (A) if a variation of yes or y, then start the deletion process
-            try { // (A) send a DELETE request to the club endpoint
-                const response = await fetch(`http://127.0.0.1:5000/clubs/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-
-                if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if status code is out of 200s, return the error
-
-                console.log(response.message); // (A) log message for debugging purposes
-                fetchUserClubs(); // (A) fetch the new set of clubs since there might be an update
-                return true;
-            } catch (error) {
-                console.error(error);
-                return false;
-            }
-        }
-    }
-
     const handleLogout = () => { // (A) basic logout function using the logout() method hooked from the auth contexgt
         logout();
         navigate('/login'); // (A) navigate back to login
@@ -138,7 +114,6 @@ function Landing() {
                                 <div key={club.club_id} className="clubNote">
                                     <div className="clubHeader">
                                         {club.is_admin ? (<p className="adminCheck">Admin</p>) : (<p>Member</p>)}
-                                        {club.is_admin && (<p className="adminDelete" onClick={() => (handleDelete(club.club_id))}>X</p>)}
                                     </div>
                                     <div className="clubContent" onClick={() => navigate(`/clubs/${club.club_id}`)}>
                                         <p className="clubName">{club.name}</p>

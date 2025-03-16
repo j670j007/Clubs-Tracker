@@ -183,6 +183,15 @@
     background-color: rgba(93, 93, 219, 1);
 }
 
+.manageDeleteA{
+    background-color: rgba(196, 83, 38, 0.925);
+    color: white;
+}
+
+.manageDeleteA:hover {
+    background-color: rgb(113, 30, 13);
+}
+
 .clubActivity {
     background-color: white;
     border-radius: 8px;

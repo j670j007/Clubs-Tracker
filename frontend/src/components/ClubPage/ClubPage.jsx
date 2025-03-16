@@ -45,6 +45,30 @@ function ClubPage() {
         }
     };
 
+
+    const handleDelete = async (id) => { // (A) function to handle deleting when clicking the button
+        const userInput = prompt("Are you sure you want to delete this club?"); // (A) prompt to check user input
+        if (["yes", "y"].includes(userInput.toLowerCase().trim())) { // (A) if a variation of yes or y, then start the deletion process
+            try { // (A) send a DELETE request to the club endpoint
+                const response = await fetch(`http://127.0.0.1:5000/clubs/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if status code is out of 200s, return the error
+
+                console.log(response.message); // (A) log message for debugging purposes
+                navigate('/dashboard');
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        }
+    }
+
     const handleLogout = () => {
         logout();
         navigate('/login');
@@ -101,6 +125,7 @@ function ClubPage() {
                                 <div className="adminActions">
                                     <button className="editButtonA">Edit Club</button>
                                     <button className="manageButtonA">Manage Members</button>
+                                    {clubData.is_admin && (<button className="manageDeleteA" onClick={() => (handleDelete(clubId))}>Delete</button>)}
                                 </div>
                             </div>
                         )}
