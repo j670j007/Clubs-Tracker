@@ -85,10 +85,9 @@ function ClubPage() {
                 });
 
                 if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if response code is out of 200s, throw the error along with the status msg
-                fetchUserClubs(); // (A) update clubs again
 
                 console.log(response.message);
-                return true;
+                navigate('/dashboard');
             } catch (error) {
                 console.error(error);
                 return false;
