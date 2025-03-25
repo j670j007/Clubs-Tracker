@@ -36,7 +36,7 @@ function CreateClub({ onClose, onSubmit }) { // (A) use onclose and onsubmit hoo
             ...formData, // (A) keep every other part of the current form data state the same
             [e.target.name]: e.target.value // (A) except the one that was changed
         });
-    };
+    };  
 
     const handleSubmit = async (e) => { // (A) submission handling function
         e.preventDefault(); // (A) prevent the form from being used while processing

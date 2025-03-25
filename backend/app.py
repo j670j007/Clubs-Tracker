@@ -3,7 +3,7 @@ File: app.py
 Description: Backend Flask application for club tracking system
 Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 03/06/2025 - (M) Add join clubs function
+Revised: 03/14/2025 - (J) Add leave clubs function
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -20,6 +20,7 @@ Return Values:
 - Create club success: JSON with message and club_id, status 201
 - Delete club success: JSON with message,status 200
 - Join club success: JSON with message, status 201
+- Leave club success: JSON with message, status 201
 - Error responses: JSON with error message, status 400/401/500
 
 Error Conditions:
@@ -425,6 +426,147 @@ def get_user_clubs(current_user):
             'count': len(clubs_list)
         }), 200
         
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/join_club', methods=['POST'])
+@token_required  # (M) The user must be authenticated (logged in) in order to access this functionality (joining a club)
+def join_club(current_user):  # (M) Pass in the current_user to indicate which user is currently authenticated
+    """
+    (M) Logged-in user can join an existing club in the database
+    
+    Takes a club_id to identify which club the user wants to join
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Missing club_id, invite code field (400)
+        - User already a member of the club (400)
+        - Club not found (404)
+        - Wrong invite code (403)
+    """
+    data = request.get_json()
+    
+    # (M) Check for required fields
+    if 'invite_code' not in data:
+        return jsonify({'error': 'Missing required invite_code field'}), 400
+        
+    # (M) Find the club by invite code
+    club = Club.query.filter_by(Invite_Code=data['invite_code']).first()
+    if not club:
+        return jsonify({'error': 'Club not found. Invalid invite code'}), 404
+    
+    # (M) Check if user is already a member
+    existing_member = ClubUser.query.filter_by(
+        Club_ID=club.Club_ID,
+        User_ID=current_user.User_ID
+    ).first()
+    
+    if existing_member:
+        return jsonify({'error': 'User is already a member of this club'}), 400
+        
+    try:
+        new_member = ClubUser(
+            Club_ID=club.Club_ID,
+            User_ID=current_user.User_ID,
+            Club_Member_Date_Added=datetime.now().date(),
+            Admin=False  # (M) New members are not admins by default
+        )
+        db.session.add(new_member)
+        db.session.commit()
+        return jsonify({'message': 'Successfully joined club'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/leave_club', methods=['DELETE'])
+@token_required  # (M) The user must be authenticated (logged in) in order to access this functionality (leaving a club)
+def leave_club(current_user):
+
+    """
+    (J) Logged-in user can leave a club where they are a member
+    
+    Takes a club_id to identify which club the user wants to leave
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Missing club_id (400)
+        - User not a member of the club (400)
+        - Club not found (404)
+    """
+
+    data = request.get_json()
+
+    # Check for the required field
+    if 'club_id' not in data:
+        return jsonify({'error': 'Missing required club_id field'}), 400
+
+    # Check if the user is a member of the club
+    existing_member = ClubUser.query.filter_by(
+        Club_ID=data['club_id'],
+        User_ID=current_user.User_ID
+    ).first()
+
+    if not existing_member:
+        return jsonify({'error': 'User is not a member of this club'}), 400
+
+    # Check if the club exists
+    club = Club.query.get(data['club_id'])
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+
+    try:
+        db.session.delete(existing_member)
+        db.session.commit()
+        return jsonify({'message': 'Successfully left club'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+
+
+@app.route('/clubs/<int:club_id>', methods=['GET'])
+@token_required
+def get_club(current_user, club_id):
+    """
+    Get detailed information about a specific club
+    
+    Returns:
+        - JSON response with club details
+        
+    Error conditions:
+        - Club does not exist (404)
+        - User is not a member of the club (403)
+    """
+    # (A) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (A) Check if user is a member of the club
+    is_member = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID
+    ).first()
+    
+    if not is_member:
+        return jsonify({'error': 'Permission denied. You must be a member to view club details'}), 403
+    
+    try:
+        # (A) Get club information
+        club_data = {
+            'club_id': club.Club_ID,
+            'name': club.Club_Name,
+            'description': club.Club_Desc,
+            'date_added': club.Date_Added.strftime('%Y-%m-%d'),
+            'invite_code': club.Invite_Code,
+            'is_admin': is_member.Admin
+        }
+        
+        return jsonify(club_data), 200
+    
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     

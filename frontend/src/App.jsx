@@ -23,6 +23,7 @@ import { AuthProvider } from './context/AuthContext'; // Our Authentication cont
 import Login from './components/Login/Login';
 import Register from './components/Register/Register'
 import Landing from './components/Landing/Landing'
+import ClubPage from './components/ClubPage/ClubPage'
 import './App.css'
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <Route path="/login" element={<><div className="background"></div><Login/></>}/>
           <Route path="/register" element={<><div className="background"></div><Register/></>}/>
           <Route path="/dashboard" element={<Landing/>}/>
+          <Route path="/clubs/:clubId" element={ <ClubPage/>}/>
           <Route path="*" element={<Navigate to ="/login" replace/>}/> {/* this will be changed with some safety later */}
         </Routes>
       </AuthProvider>

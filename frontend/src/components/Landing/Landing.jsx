@@ -35,7 +35,7 @@ function Landing() {
     const { logout } = useAuth(); // (A) logout function hooked from the authentication context
 
     useEffect(() => {
-        fetchUserClubs(); 
+        fetchUserClubs();
     }, []); // (A) on component render, fetch all clubs of the user
 
     /*
@@ -70,29 +70,29 @@ function Landing() {
         }
     };
 
-    const handleDelete = async (id) => { // (A) function to handle deleting when clicking the button
-        const userInput = prompt("Are you sure you want to delete this club?"); // (A) prompt to check user input
-        if (["yes", "y"].includes(userInput.toLowerCase().trim())) { // (A) if a variation of yes or y, then start the deletion process
-            try { // (A) send a DELETE request to the club endpoint
-                const response = await fetch(`http://127.0.0.1:5000/clubs/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
+    const joinClub = async (code) => {
+        try { // (A) our api call to get clubs
+            const response = await fetch('http://127.0.0.1:5000/join_club', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // (A) specify our content type
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // (A) only the authorization token is required since backend parses user from the token
+                },
+                body: JSON.stringify({ // (A) stringify a new object with the correct form names according to the backend
+                    invite_code: code
+                })
+            });
 
-                if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if status code is out of 200s, return the error
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if response code is out of 200s, throw the error along with the status msg
+            fetchUserClubs(); // (A) update clubs again
 
-                console.log(response.message); // (A) log message for debugging purposes
-                fetchUserClubs(); // (A) fetch the new set of clubs since there might be an update
-                return true;
-            } catch (error) {
-                console.error(error);
-                return false;
-            }
+            console.log(response.message);
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
         }
-    }
+    };
 
     const handleLogout = () => { // (A) basic logout function using the logout() method hooked from the auth contexgt
         logout();
@@ -116,6 +116,7 @@ function Landing() {
                     <ul>
                         <li id="start" onClick={() => navigate('/dashboard')}>Home</li>
                         <li onClick={() => setShowCreateClub(true)}>Create Club</li>
+                        <li onClick={() => joinClub(prompt("Enter club code:"))}>Join Club</li>
                         <li id="end" onClick={handleLogout}>Logout</li>
                     </ul>
                 </div>
@@ -138,9 +139,8 @@ function Landing() {
                                 <div key={club.club_id} className="clubNote">
                                     <div className="clubHeader">
                                         {club.is_admin ? (<p className="adminCheck">Admin</p>) : (<p>Member</p>)}
-                                        {club.is_admin && (<p className="adminDelete" onClick={() => (handleDelete(club.club_id))}>X</p>)}
                                     </div>
-                                    <div className="clubContent">
+                                    <div className="clubContent" onClick={() => navigate(`/clubs/${club.club_id}`)}>
                                         <p className="clubName">{club.name}</p>
                                         <p className="clubDesc">{club.club_desc}</p>
                                     </div>
