@@ -3,7 +3,7 @@ File: app.py
 Description: Backend Flask application for club tracking system
 Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 03/14/2025 - (J) Add leave clubs function
+Revised: 03/25/2025 - (M) Add event table, create event function
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -13,6 +13,7 @@ Input Values:
 - Registration endpoint accepts JSON with: first_name, last_name, email, password, login_id
 - Login endpoint accepts JSON with: login_id, password
 - Create club endpoint accepts JSON with: club_name, club_desc, invite_code
+- Create club endpoint accepts JSON with: event_desc, event_location, event_date
 
 Return Values:
 - Registration success: JSON with message and user_id, status 201
@@ -21,6 +22,7 @@ Return Values:
 - Delete club success: JSON with message,status 200
 - Join club success: JSON with message, status 201
 - Leave club success: JSON with message, status 201
+- Create event success: JSON with message, status 201
 - Error responses: JSON with error message, status 400/401/500
 
 Error Conditions:
@@ -119,6 +121,24 @@ class ClubUser(db.Model):
     User_ID = db.Column(db.Integer, db.ForeignKey('users.User_ID')) # Logged-in user
     Club_Member_Date_Added = db.Column(db.Date) # Date added 
     Admin = db.Column(db.Boolean)  # (M) Admin boolean value
+
+class Event(db.Model):
+    """
+    (M) User database model representing the 'events' table
+
+    Attributes:
+        Event_ID (int): Primary key for identifying the event. Auto-assigned. 
+        Club_ID (int): ID of club associated with the event.
+        Event_Desc (text): Description of the event.
+        Event_Location (string): Location of the event.
+        Event_Date: Date of the event.
+    """
+    __tablename__ = 'events'
+    Event_ID = db.Column(db.Integer, primary_key=True)
+    Club_ID = db.Column(db.Integer, db.ForeignKey('clubs.Club_ID'))
+    Event_Desc = db.Column(db.Text)
+    Event_Location = db.Column(db.String(255))
+    Event_Date = db.Column(db.Date)
 
 def generate_token(user_id):
     """
@@ -624,6 +644,65 @@ def join_club(current_user):  # (M) Pass in the current_user to indicate which u
         db.session.add(new_member)
         db.session.commit()
         return jsonify({'message': 'Successfully joined club'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/clubs/<int:club_id>/events', methods=['POST'])
+@token_required
+def create_event(current_user, club_id):
+    """
+    (M) Admin member can create a event for their club
+    
+    Takes in an event description, location, and date
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - User is not an admin of the club (403)
+        - Missing required fields (400)
+        - Wrong date format (400)
+    """
+
+    # (M) Check if user is an admin of the club
+    is_admin = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+    
+    if not is_admin:
+        return jsonify({'error': 'Permission denied. Only club admins can create events'}), 403
+    
+    # (M) Validate request data
+    data = request.get_json()
+    required_fields = ['event_desc', 'event_location', 'event_date']
+    for field in required_fields:
+        if field not in data:
+            return jsonify({'error': f'Missing required field: {field}'}), 400
+    
+    # (M) Parse the date
+    try:
+        event_date = datetime.strptime(data['event_date'], '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD'}), 400
+            
+    try:
+        new_event = Event(
+            Club_ID=club_id,
+            Event_Desc=data['event_desc'],
+            Event_Location=data['event_location'],
+            Event_Date=event_date
+        )
+        db.session.add(new_event)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Event created successfully',
+            'event_id': new_event.Event_ID,
+            'event_date': new_event.Event_Date.strftime('%Y-%m-%d')
+        }), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
