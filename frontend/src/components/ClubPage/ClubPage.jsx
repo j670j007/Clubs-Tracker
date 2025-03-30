@@ -39,6 +39,9 @@ function ClubPage() {
     const [isEditingDescription, setIsEditingDescription] = useState(false);
     const [editedDescription, setEditedDescription] = useState('');
 
+    const [isEditingInviteCode, setIsEditingInviteCode] = useState(false);
+    const [editedInviteCode, setEditedInviteCode] = useState('');
+
     useEffect(() => {
         fetchClubDetails();
     }, [clubId]); // (A) when clubId loads, fetch club information
@@ -57,6 +60,7 @@ function ClubPage() {
             const data = await response.json();
             setClubData(data);
             setEditedDescription(data.description);
+            setEditedInviteCode(data.invite_code);
             setError(null);
         } catch (err) {
             console.error("Error fetching club details:", err); // (A) responds accordingly to the status codes in the backend
@@ -96,6 +100,34 @@ function ClubPage() {
             setIsEditingDescription(false);
         } catch (err) {
             console.error("Error updating description:", err);
+        }
+    };
+
+
+    // (A) Invite code editing functionality
+    const saveInviteCode = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}/invite-code`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    invite_code: editedInviteCode
+                })
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
+            // (A) Update local state
+            setClubData({
+                ...clubData,
+                invite_code: editedInviteCode
+            });
+            setIsEditingInviteCode(false);
+        } catch (err) {
+            console.error("Error updating invite code:", err);
         }
     };
 
@@ -244,10 +276,30 @@ function ClubPage() {
                     </div>
                     <div className="clubMisc">
                         <div className="inviteBox">
-                            <p>Invite Code:</p>
-                            <div className="inviteCode">
-                                <span>{clubData.invite_code}</span>
+                            <div className="clubCardHeader">
+                                <p>Invite Code:</p>
+                                {clubData.is_admin && (
+                                    <button className="editClubButton" onClick={() => setIsEditingInviteCode(true)}> <img src={editIcon} /> </button>
+                                )}
                             </div>
+                            {isEditingInviteCode ? (
+                                <div className="editSection">
+                                    <input
+                                        type="text"
+                                        value={editedInviteCode}
+                                        onChange={(e) => setEditedInviteCode(e.target.value)}
+                                        className="editCodeTextarea"
+                                    />
+                                    <div className="editActions">
+                                        <button onClick={() => setIsEditingInviteCode(false)} className="cancelBtn"> Cancel </button>
+                                        <button onClick={saveInviteCode} className="saveBtn"> Save </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="inviteCode">
+                                    <span>{clubData.invite_code}</span>
+                                </div>
+                            )}
                             <p className="inviteHelp">Share this code with others to let them join your club</p>
                         </div>
                     </div>

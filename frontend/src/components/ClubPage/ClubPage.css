@@ -88,10 +88,14 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
+    align-items: center;
 }
 
-.editTextarea,
-.editInput {
+.inviteBox .clubCardHeader {
+    margin-bottom: 5px;
+}
+
+.editTextarea {
     width: 95%;
     min-height: 200px;
     padding: 10px;
@@ -104,11 +108,22 @@
     font-family: 'Inter', sans-serif;
 }
 
-.editTextarea:focus,
-.editInput:focus {
+.editTextarea:focus {
     outline: none;
     border-color: rgba(93, 93, 219, 0.5);
     box-shadow: 0 0 0 2px rgba(93, 93, 219, 0.1);
+}
+
+.inviteBox .editCodeTextarea {
+    width: 95%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    margin-bottom: 10px;
+    background-color: white;
+    flex-grow: 1;
 }
 
 .editActions {
@@ -150,7 +165,15 @@
 .editClubButton {
     height: 10%;
     width: 10%;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0);
+    outline: none;
+    border: none;
+}
+
+.inviteBox .editClubButton {
+    height: 9%;
+    width: 9%;
+    background-color: rgba(255, 255, 255, 0);
     outline: none;
     border: none;
 }
