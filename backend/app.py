@@ -590,63 +590,6 @@ def get_club(current_user, club_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-@app.route('/join_club', methods=['POST'])
-@token_required  # (M) The user must be authenticated (logged in) in order to access this functionality (joining a club)
-def join_club(current_user):  # (M) Pass in the current_user to indicate which user is currently authenticated
-    """
-    (M) Logged-in user can join an existing club in the database
-    
-    Takes a club_id to identify which club the user wants to join
-    
-    Returns:
-        - JSON response with success/error message and status code
-        
-    Error conditions:
-        - Missing club_id, invite code field (400)
-        - User already a member of the club (400)
-        - Club not found (404)
-        - Wrong invite code (403)
-    """
-    data = request.get_json()
-    
-    # (M) Check for required fields
-    if 'club_id' not in data:
-        return jsonify({'error': 'Missing required club_id field'}), 400
-    
-    if 'invite_code' not in data:
-        return jsonify({'error': 'Missing required invite_code field'}), 400
-        
-    # (M) Check if user is already a member
-    existing_member = ClubUser.query.filter_by(
-        Club_ID=data['club_id'],
-        User_ID=current_user.User_ID
-    ).first()
-    
-    if existing_member:
-        return jsonify({'error': 'User is already a member of this club'}), 400
-    
-    # (M) Check if the club exists
-    club = Club.query.get(data['club_id'])
-    if not club:
-        return jsonify({'error': 'Club not found'}), 404
-    
-    # (M) Validate invite code
-    if club.Invite_Code != data['invite_code']:
-        return jsonify({'error': 'Invalid invite code'}), 403
-        
-    try:
-        new_member = ClubUser(
-            Club_ID=data['club_id'],
-            User_ID=current_user.User_ID,
-            Club_User_Date_Added=datetime.now().date(),
-            Admin=False  # (M) New members are not admins by default
-        )
-        db.session.add(new_member)
-        db.session.commit()
-        return jsonify({'message': 'Successfully joined club'}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 400
 
 @app.route('/clubs/<int:club_id>/events', methods=['POST'])
 @token_required
