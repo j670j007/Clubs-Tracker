@@ -26,6 +26,7 @@ import { useAuth } from '../../context/AuthContext';
 import './ClubPage.css';
 
 import logo from "../../assets/logo.svg";
+import editIcon from "../../assets/edit.svg";
 
 function ClubPage() {
     const { clubId } = useParams(); // (A) get the clubId from the link used 
@@ -34,6 +35,9 @@ function ClubPage() {
     const [clubData, setClubData] = useState(null); // (A) state for club data when we call our backend
     const [loading, setLoading] = useState(true); // (A) handle midway loads
     const [error, setError] = useState(null); // (A) error checks
+
+    const [isEditingDescription, setIsEditingDescription] = useState(false);
+    const [editedDescription, setEditedDescription] = useState('');
 
     useEffect(() => {
         fetchClubDetails();
@@ -52,6 +56,7 @@ function ClubPage() {
             if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
             const data = await response.json();
             setClubData(data);
+            setEditedDescription(data.description);
             setError(null);
         } catch (err) {
             console.error("Error fetching club details:", err); // (A) responds accordingly to the status codes in the backend
@@ -67,6 +72,32 @@ function ClubPage() {
         }
     };
 
+    // (A) Description editing functionality
+    const saveDescription = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}/description`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    club_desc: editedDescription
+                })
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
+            // Update local state
+            setClubData({
+                ...clubData,
+                description: editedDescription
+            });
+            setIsEditingDescription(false);
+        } catch (err) {
+            console.error("Error updating description:", err);
+        }
+    };
 
     const handleDelete = async (id) => { // (A) function to handle deleting when clicking the button
         const userInput = prompt("Are you sure you want to delete this club?"); // (A) prompt to check user input
@@ -155,7 +186,7 @@ function ClubPage() {
                         <img src={logo}></img>
                         <span className="clubDate">
                             <h1>{clubData.name}</h1>
-                            {clubData.is_admin && (<span className="adminBadge">Admin</span>)}
+                            {(clubData.is_admin) ? (<span className="adminBadge">Admin</span>) : (<span className="memberBadge">Member</span>)}
                             Created: {clubData.date_added}</span>
                     </div>
                     <ul>
@@ -165,14 +196,31 @@ function ClubPage() {
                 </div>
                 <div className="clubContentC">
                     <div className="clubCard">
-                        <h2>About this Club</h2>
-                        <p className="clubDescription">{clubData.description}</p>
+                        <div className="clubCardHeader">
+                            <h2>About this Club</h2>
+                            {clubData.is_admin && (<button className="editClubButton" onClick={() => setIsEditingDescription(true)}> <img src={editIcon} /> </button>)}
+                        </div>
+                        {isEditingDescription ? (
+                            <div className="editSection">
+                                <textarea
+                                    value={editedDescription}
+                                    onChange={(e) => setEditedDescription(e.target.value)}
+                                    className="editTextarea"
+                                />
+                                <div className="editActions">
+                                    <button onClick={() => setIsEditingDescription(false)} className="cancelBtn"> Cancel </button>
+                                    <button onClick={saveDescription} className="saveBtn"> Save </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className="clubDescription">{clubData.description}</p>
+                        )}
                         {(clubData.is_admin) ? (
                             <div className="adminSection">
                                 <h3>Admin Information</h3>
                                 <div className="adminActions">
                                     <button className="editButtonA">Edit Club</button>
-                                    <button className="manageButtonA">Manage Members</button>
+                                    {/* <button className="manageButtonA">Manage Members</button> */}
                                     <button className="manageDeleteA" onClick={() => (handleDelete(clubId))}>Delete</button>
                                     <button className="manageLeaveA" onClick={() => (handleLeave(clubId))}>Leave</button>
                                 </div>
@@ -186,9 +234,12 @@ function ClubPage() {
                         )}
                     </div>
                     <div className="clubActivity">
-                        <h2>Club Activity</h2>
+                        <div className="clubCardHeader">
+                            <h2>Club Events</h2>
+                            {clubData.is_admin && (<button className="editClubButton"> <img src={editIcon} /> </button>)}
+                        </div>
                         <div className="activityPlaceholder">
-                            <p>No recent activity</p>
+                            <p>No recent events</p>
                         </div>
                     </div>
                     <div className="clubMisc">

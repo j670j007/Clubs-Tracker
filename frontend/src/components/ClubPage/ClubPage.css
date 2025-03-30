@@ -57,6 +57,16 @@
     margin-right: 10px;
 }
 
+.memberBadge {
+    background-color: rgba(116, 105, 99, 0.925);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
 .clubContentC {
     display: grid;
     align-self: center;
@@ -74,6 +84,82 @@
     padding: 24px;
 }
 
+.clubCardHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.editTextarea,
+.editInput {
+    width: 95%;
+    min-height: 200px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    margin-bottom: 10px;
+    background-color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.editTextarea:focus,
+.editInput:focus {
+    outline: none;
+    border-color: rgba(93, 93, 219, 0.5);
+    box-shadow: 0 0 0 2px rgba(93, 93, 219, 0.1);
+}
+
+.editActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.cancelBtn,
+.saveBtn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+}
+
+.cancelBtn {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+.saveBtn {
+    background-color: rgba(93, 93, 219, 0.925);
+    border: none;
+    color: white;
+}
+
+.cancelBtn:hover {
+    background-color: #e8e8e8;
+}
+
+.saveBtn:hover {
+    background-color: rgba(93, 93, 219, 1);
+}
+
+.editClubButton {
+    height: 10%;
+    width: 10%;
+    background-color: white;
+    outline: none;
+    border: none;
+}
+
+.editClubButton img {
+    height: 100%;
+    width: 100%;
+}
+
 .clubCard h2 {
     font-family: 'Playfair Display', serif;
     font-size: 24px;
@@ -87,6 +173,7 @@
     line-height: 1.6;
     color: #444;
     margin-bottom: 24px;
+    min-height: 200px;
 }
 
 .adminSection {
