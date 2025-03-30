@@ -707,6 +707,48 @@ def create_event(current_user, club_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
+@app.route('/clubs/<int:club_id>/events/<int:event_id>', methods=['DELETE'])
+@token_required
+def delete_event(current_user, club_id, event_id):
+    """
+    (C) Admin member can delete an event for their club
+    
+    Deletes selected event from schedule
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - User is not an admin of the club (403)
+        - Event not found (404)
+        - Failed to delete (500)
+    """
+    # (C) Check if event exists
+    event = Event.query.get(event_id)
+    if not event or event.Club_ID != club_id:
+        return jsonify({'error': 'Event not found or does not belong to this club'}), 404
+
+    # (C) Check if the user is an admin of the club
+    is_admin = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+
+    if not is_admin:
+        return jsonify({'error': 'Permission denied. Only club admins can delete events'}), 403
+
+    try:
+        # (C) Delete the event
+        db.session.delete(event)
+        db.session.commit()
+        return jsonify({'message': 'Event successfully deleted'}), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to delete event: {str(e)}'}), 500
+
+
 def drop_all_tables():
     """
     (M) Custom function to safely drop all tables, handling foreign key constraints.
