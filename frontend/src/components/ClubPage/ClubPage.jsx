@@ -27,6 +27,8 @@ import './ClubPage.css';
 
 import logo from "../../assets/logo.svg";
 import editIcon from "../../assets/edit.svg";
+import addIcon from "../../assets/add.svg";
+import deleteIcon from "../../assets/delete.svg";
 
 function ClubPage() {
     const { clubId } = useParams(); // (A) get the clubId from the link used 
@@ -42,9 +44,19 @@ function ClubPage() {
     const [isEditingInviteCode, setIsEditingInviteCode] = useState(false);
     const [editedInviteCode, setEditedInviteCode] = useState('');
 
+    const [events, setEvents] = useState([]);
+    const [isAddingEvent, setIsAddingEvent] = useState(false);
+    const [eventsLoading, setEventsLoading] = useState(false);
+    const [newEvent, setNewEvent] = useState({
+        event_desc: '',
+        event_location: '',
+        event_date: ''
+    });
+
     useEffect(() => {
         fetchClubDetails();
-    }, [clubId]); // (A) when clubId loads, fetch club information
+        fetchClubEvents();
+    }, [clubId]); // (A) when clubId loads, fetch club information and club events
 
     const fetchClubDetails = async () => {
         setLoading(true); // (A) set our loading state to true, will show intermeditary html
@@ -73,6 +85,77 @@ function ClubPage() {
             }
         } finally {
             setLoading(false); // (A) loaded (real mem) or not, remove intermediatry 
+        }
+    };
+
+    const fetchClubEvents = async () => {
+        setEventsLoading(true); // (A) set buffer to true so we know where we're at while processing the request
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}/events`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
+            const data = await response.json();
+            setEvents(data.events); // (A) update our events state with data
+        } catch (err) {
+            console.error("Error fetching club events:", err);
+        } finally {
+            setEventsLoading(false); // (A) remove buffer
+        }
+    };
+
+    const addEvent = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}/events`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify(newEvent)
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
+            // (A) refresh events list after successful add event
+            fetchClubEvents();
+
+            // (A) reset form and close it
+            setIsAddingEvent(false);
+            setNewEvent({
+                event_desc: '',
+                event_location: '',
+                event_date: ''
+            });
+        } catch (err) {
+            console.error("Error adding event:", err);
+        }
+    };
+
+    const deleteEvent = async (eventId) => {
+        if (!confirm("Are you sure you want to delete this event?")) return;
+
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}/events/${eventId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
+            // (A) refresh events list after successful deletion
+            fetchClubEvents();
+        } catch (err) {
+            console.error("Error deleting event:", err);
         }
     };
 
@@ -251,7 +334,7 @@ function ClubPage() {
                             <div className="adminSection">
                                 <h3>Admin Information</h3>
                                 <div className="adminActions">
-                                    <button className="editButtonA">Edit Club</button>
+                                    {/* <button className="editButtonA">Edit Club</button> */}
                                     {/* <button className="manageButtonA">Manage Members</button> */}
                                     <button className="manageDeleteA" onClick={() => (handleDelete(clubId))}>Delete</button>
                                     <button className="manageLeaveA" onClick={() => (handleLeave(clubId))}>Leave</button>
@@ -268,11 +351,76 @@ function ClubPage() {
                     <div className="clubActivity">
                         <div className="clubCardHeader">
                             <h2>Club Events</h2>
-                            {clubData.is_admin && (<button className="editClubButton"> <img src={editIcon} /> </button>)}
+                            {clubData.is_admin && (
+                                <button className="editClubButton" onClick={() => setIsAddingEvent(true)}> <img src={addIcon} /></button>
+                            )}
                         </div>
-                        <div className="activityPlaceholder">
-                            <p>No recent events</p>
-                        </div>
+                        {eventsLoading ? (
+                            <div className="activityPlaceholder">
+                                <p>Loading events...</p>
+                            </div>
+                        ) : isAddingEvent ? (
+                            <div className="addEventForm">
+                                <h3>Add New Event</h3>
+                                <div className="formGroup">
+                                    <label>Event Description</label>
+                                    <textarea
+                                        value={newEvent.event_desc}
+                                        onChange={(e) => setNewEvent({ ...newEvent, event_desc: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="formGroup">
+                                    <label>Event Location</label>
+                                    <input
+                                        type="text"
+                                        value={newEvent.event_location}
+                                        onChange={(e) => setNewEvent({ ...newEvent, event_location: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="formGroup">
+                                    <label>Event Date</label>
+                                    <input
+                                        type="date"
+                                        value={newEvent.event_date}
+                                        onChange={(e) => setNewEvent({ ...newEvent, event_date: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="editActions">
+                                    <button
+                                        onClick={() => {
+                                            setIsAddingEvent(false);
+                                            setNewEvent({
+                                                event_desc: '',
+                                                event_location: '',
+                                                event_date: ''
+                                            });
+                                        }}
+                                        className="cancelBtn"> Cancel </button>
+                                    <button onClick={addEvent} className="saveBtn" disabled={!newEvent.event_desc || !newEvent.event_location || !newEvent.event_date}>Add Event</button>
+                                </div>
+                            </div>
+                        ) : events.length === 0 ? (
+                            <div className="activityPlaceholder">
+                                <p>No upcoming events</p>
+                            </div>
+                        ) : (
+                            <div className="eventsList">
+                                {events.map(event => (
+                                    <div key={event.event_id} className="eventCard">
+                                        <div className="eventHeader">
+                                            <h3>Event</h3>
+                                            {clubData.is_admin && (<button className="deleteIconBtn" onClick={() => deleteEvent(event.event_id)}><img src={deleteIcon} /></button>)}
+                                        </div>
+                                        <div className="eventDate">{event.date}</div>
+                                        <div className="eventLocation">Location: {event.location}</div>
+                                        <p>{event.description}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div className="clubMisc">
                         <div className="inviteBox">
