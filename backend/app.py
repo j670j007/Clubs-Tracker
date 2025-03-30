@@ -591,6 +591,7 @@ def get_club(current_user, club_id):
         return jsonify({'error': str(e)}), 500
     
 
+
 @app.route('/clubs/<int:club_id>/events', methods=['POST'])
 @token_required
 def create_event(current_user, club_id):
