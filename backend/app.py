@@ -692,6 +692,55 @@ def delete_event(current_user, club_id, event_id):
         db.session.rollback()
         return jsonify({'error': f'Failed to delete event: {str(e)}'}), 500
 
+@app.route('/clubs/<int:club_id>/description', methods=['PUT'])
+@token_required
+def update_club_description(current_user, club_id):
+    """
+    (A) Update the description of a specific club
+    
+    Takes a new club description in the request data
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Club does not exist (404)
+        - User is not an admin of the club (403)
+        - Missing required fields (400)
+    """
+    # (A) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (A) Check if user is an admin of the club
+    is_admin = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+    
+    if not is_admin:
+        return jsonify({'error': 'Permission denied. Only club admins can update club description'}), 403
+    
+    # (A) Validate request data
+    data = request.get_json()
+    if not data or 'club_desc' not in data:
+        return jsonify({'error': 'Missing required field: club_desc'}), 400
+    
+    try:
+        # (A) Update club description
+        club.Club_Desc = data['club_desc']
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Club description updated successfully',
+            'club_id': club.Club_ID,
+            'new_description': club.Club_Desc
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
 
 def drop_all_tables():
     """
