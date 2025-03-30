@@ -792,6 +792,53 @@ def update_club_invite_code(current_user, club_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
+@app.route('/clubs/<int:club_id>/events', methods=['GET'])
+@token_required
+def get_club_events(current_user, club_id):
+    """
+    (A) Get all events for a specific club
+    
+    Returns:
+        - JSON response with list of events
+        
+    Error conditions:
+        - Club does not exist (404)
+        - User is not a member of the club (403)
+    """
+    # (A) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (A) Check if user is a member of the club
+    is_member = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID
+    ).first()
+    
+    if not is_member:
+        return jsonify({'error': 'Permission denied. You must be a member to view club events'}), 403
+    
+    try:
+        # (A) Query for all events of the club
+        events = Event.query.filter_by(Club_ID=club_id).all()
+        
+        # (A) Format the results
+        events_list = [{
+            'event_id': event.Event_ID,
+            'description': event.Event_Desc,
+            'location': event.Event_Location,
+            'date': event.Event_Date.strftime('%Y-%m-%d')
+        } for event in events]
+        
+        return jsonify({
+            'events': events_list,
+            'count': len(events_list)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def drop_all_tables():
     """
     (M) Custom function to safely drop all tables, handling foreign key constraints.
