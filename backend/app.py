@@ -3,7 +3,7 @@ File: app.py
 Description: Backend Flask application for club tracking system
 Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 03/25/2025 - (M) Add event table, create event function
+Revised: 04/04/2025 - (M) Add "add club profile picture" function
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -23,6 +23,7 @@ Return Values:
 - Join club success: JSON with message, status 201
 - Leave club success: JSON with message, status 201
 - Create event success: JSON with message, status 201
+- Add profile picture success: JSON with message, status 200
 - Error responses: JSON with error message, status 400/401/500
 
 Error Conditions:
@@ -43,6 +44,8 @@ import jwt  # (M) JWT library for token operations
 from datetime import datetime, timedelta  # (M) datetime for timestamp handling and token expiration
 from werkzeug.security import generate_password_hash, check_password_hash  # (C) Security functions for password handling
 from flask_cors import CORS
+import os
+import time
 
 # (C) Initialize Flask application
 app = Flask(__name__)
@@ -854,6 +857,97 @@ def get_club_events(current_user, club_id):
         }), 200
         
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/clubs/<int:club_id>/profile-picture', methods=['POST'])
+@token_required
+def add_club_profile_picture(current_user, club_id):
+    """
+    (M) Add or update a profile picture for a club.
+    User must be an admin of the club.
+
+    Takes in an uploaded image file (png, jpg, jpeg).
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Club doesn't exist (404)
+        - User is not an admin of the club (403)
+        - No image / invalid image file provided (400)
+    """
+    # (M) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (M) Check if user is an admin of the club
+    member = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+    
+    if not member:
+        return jsonify({'error': 'Permission denied. Only club admins can update profile pictures'}), 403
+    
+    # (M) Check if file was uploaded
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image file provided'}), 400
+        
+    image_file = request.files['image']
+    
+    if image_file.filename == '':
+        return jsonify({'error': 'No image selected'}), 400
+        
+    # (M) Validate file type
+    allowed_extensions = {'png', 'jpg', 'jpeg'}
+    if not ('.' in image_file.filename and image_file.filename.rsplit('.', 1)[1].lower() in allowed_extensions):
+        return jsonify({'error': 'Invalid file type. Allowed: png, jpg, jpeg'}), 400
+    
+    try:
+        # (M) Generate a unique filename
+        filename = f"club_{club_id}_profile_{int(time.time())}.{image_file.filename.rsplit('.', 1)[1].lower()}"
+        
+        # (M) Define upload path (ensure this directory exists)
+        upload_dir = os.path.join(app.root_path, 'static', 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # (M) Save the file
+        file_path = os.path.join(upload_dir, filename)
+        image_file.save(file_path)
+        
+        # (M) Store relative path in database
+        relative_path = f"/static/uploads/{filename}"
+        
+        # (M) Check if a profile picture already exists
+        existing_profile = Image.query.filter_by(
+            Club_ID=club_id,
+            Profile_Pic=True
+        ).first()
+        
+        if existing_profile:
+            # (M) Update existing record
+            existing_profile.Image_Link = relative_path
+            existing_profile.Date_Added = datetime.now().date()
+        else:
+            # (M) Create new record
+            new_image = Image(
+                Club_ID=club_id,
+                Image_Link=relative_path,
+                Date_Added=datetime.now().date(),
+                Profile_Pic=True
+            )
+            db.session.add(new_image)
+            
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Profile picture updated successfully',
+            'image_url': relative_path
+        }), 200
+    except Exception as e:
+        db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
 def drop_all_tables():
