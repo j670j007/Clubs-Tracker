@@ -3,7 +3,7 @@ File: app.py
 Description: Backend Flask application for club tracking system
 Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 04/04/2025 - (M) Add "add club profile picture" function
+Revised: 04/04/2025 - (M) Add "get club profile picture" function
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -949,6 +949,39 @@ def add_club_profile_picture(current_user, club_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+    
+@app.route('/clubs/<int:club_id>/profile-picture', methods=['GET'])
+def get_club_profile_picture(club_id):
+    """
+    (M) Get the profile picture for a club.
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Club doesn't exist (404)
+        - No profile picture found (404)
+    """
+    # (M) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+    
+    # (M) Get the profile picture record
+    profile_pic = Image.query.filter_by(
+        Club_ID=club_id,
+        Profile_Pic=True
+    ).first()
+    
+    if not profile_pic:
+        return jsonify({'error': 'No profile picture set for this club'}), 404
+    
+    return jsonify({
+        'club_id': club_id,
+        'club_name': club.Club_Name,
+        'image_url': profile_pic.Image_Link,
+        'date_added': profile_pic.Date_Added.strftime('%Y-%m-%d')
+    }), 200
 
 def drop_all_tables():
     """
