@@ -103,7 +103,6 @@ class Club(db.Model):
     Date_Added = db.Column(db.Date)                   #  Date added
     Invite_Code = db.Column(db.String(255))           #  Club invite code
 
-
 class ClubUser(db.Model):
     """
      User database model representing the 'club_users' table
@@ -139,6 +138,24 @@ class Event(db.Model):
     Event_Desc = db.Column(db.Text)
     Event_Location = db.Column(db.String(255))
     Event_Date = db.Column(db.Date)
+
+class Image(db.Model):
+    """
+    (M) User database model representing the 'images' table
+
+    Attributes:
+        Image_ID (int): Primary key for identifying the image. Auto-assigned. 
+        Club_ID (int): ID of club associated with the image.
+        Image_Link (string): Contains a relative link to the image data.
+        Date_Added: Date of upload.
+        Profile_Pic (boolean): If the picture is uploaded using the "add a club profile picture" function, the value is true. Otherwise, the value is false.
+    """
+    __tablename__ = 'images'
+    Image_ID = db.Column(db.Integer, primary_key=True)
+    Club_ID = db.Column(db.Integer, db.ForeignKey('clubs.Club_ID'))
+    Image_Link = db.Column(db.String(255))
+    Date_Added = db.Column(db.Date)
+    Profile_Pic = db.Column(db.Boolean, default=False)
 
 def generate_token(user_id):
     """
