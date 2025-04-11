@@ -3,7 +3,7 @@ File: app.py
 Description: Backend Flask application for club tracking system
 Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 03/25/2025 - (M) Add event table, create event function
+Revised: 04/04/2025 - (M) Add "get club profile picture" function
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -23,6 +23,7 @@ Return Values:
 - Join club success: JSON with message, status 201
 - Leave club success: JSON with message, status 201
 - Create event success: JSON with message, status 201
+- Add profile picture success: JSON with message, status 200
 - Error responses: JSON with error message, status 400/401/500
 
 Error Conditions:
@@ -43,6 +44,8 @@ import jwt  # (M) JWT library for token operations
 from datetime import datetime, timedelta  # (M) datetime for timestamp handling and token expiration
 from werkzeug.security import generate_password_hash, check_password_hash  # (C) Security functions for password handling
 from flask_cors import CORS
+import os
+import time
 
 # (C) Initialize Flask application
 app = Flask(__name__)
@@ -103,7 +106,6 @@ class Club(db.Model):
     Date_Added = db.Column(db.Date)                   #  Date added
     Invite_Code = db.Column(db.String(255))           #  Club invite code
 
-
 class ClubUser(db.Model):
     """
      User database model representing the 'club_users' table
@@ -139,6 +141,24 @@ class Event(db.Model):
     Event_Desc = db.Column(db.Text)
     Event_Location = db.Column(db.String(255))
     Event_Date = db.Column(db.Date)
+
+class Image(db.Model):
+    """
+    (M) User database model representing the 'images' table
+
+    Attributes:
+        Image_ID (int): Primary key for identifying the image. Auto-assigned. 
+        Club_ID (int): ID of club associated with the image.
+        Image_Link (string): Contains a relative link to the image data.
+        Date_Added: Date of upload.
+        Profile_Pic (boolean): If the picture is uploaded using the "add a club profile picture" function, the value is true. Otherwise, the value is false.
+    """
+    __tablename__ = 'images'
+    Image_ID = db.Column(db.Integer, primary_key=True)
+    Club_ID = db.Column(db.Integer, db.ForeignKey('clubs.Club_ID'))
+    Image_Link = db.Column(db.String(255))
+    Date_Added = db.Column(db.Date)
+    Profile_Pic = db.Column(db.Boolean, default=False)
 
 def generate_token(user_id):
     """
@@ -590,63 +610,7 @@ def get_club(current_user, club_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-@app.route('/join_club', methods=['POST'])
-@token_required  # (M) The user must be authenticated (logged in) in order to access this functionality (joining a club)
-def join_club(current_user):  # (M) Pass in the current_user to indicate which user is currently authenticated
-    """
-    (M) Logged-in user can join an existing club in the database
-    
-    Takes a club_id to identify which club the user wants to join
-    
-    Returns:
-        - JSON response with success/error message and status code
-        
-    Error conditions:
-        - Missing club_id, invite code field (400)
-        - User already a member of the club (400)
-        - Club not found (404)
-        - Wrong invite code (403)
-    """
-    data = request.get_json()
-    
-    # (M) Check for required fields
-    if 'club_id' not in data:
-        return jsonify({'error': 'Missing required club_id field'}), 400
-    
-    if 'invite_code' not in data:
-        return jsonify({'error': 'Missing required invite_code field'}), 400
-        
-    # (M) Check if user is already a member
-    existing_member = ClubUser.query.filter_by(
-        Club_ID=data['club_id'],
-        User_ID=current_user.User_ID
-    ).first()
-    
-    if existing_member:
-        return jsonify({'error': 'User is already a member of this club'}), 400
-    
-    # (M) Check if the club exists
-    club = Club.query.get(data['club_id'])
-    if not club:
-        return jsonify({'error': 'Club not found'}), 404
-    
-    # (M) Validate invite code
-    if club.Invite_Code != data['invite_code']:
-        return jsonify({'error': 'Invalid invite code'}), 403
-        
-    try:
-        new_member = ClubUser(
-            Club_ID=data['club_id'],
-            User_ID=current_user.User_ID,
-            Club_User_Date_Added=datetime.now().date(),
-            Admin=False  # (M) New members are not admins by default
-        )
-        db.session.add(new_member)
-        db.session.commit()
-        return jsonify({'message': 'Successfully joined club'}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 400
+
 
 @app.route('/clubs/<int:club_id>/events', methods=['POST'])
 @token_required
@@ -748,6 +712,326 @@ def delete_event(current_user, club_id, event_id):
         db.session.rollback()
         return jsonify({'error': f'Failed to delete event: {str(e)}'}), 500
 
+@app.route('/clubs/<int:club_id>/description', methods=['PUT'])
+@token_required
+def update_club_description(current_user, club_id):
+    """
+    (A) Update the description of a specific club
+    
+    Takes a new club description in the request data
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Club does not exist (404)
+        - User is not an admin of the club (403)
+        - Missing required fields (400)
+    """
+    # (A) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (A) Check if user is an admin of the club
+    is_admin = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+    
+    if not is_admin:
+        return jsonify({'error': 'Permission denied. Only club admins can update club description'}), 403
+    
+    # (A) Validate request data
+    data = request.get_json()
+    if not data or 'club_desc' not in data:
+        return jsonify({'error': 'Missing required field: club_desc'}), 400
+    
+    try:
+        # (A) Update club description
+        club.Club_Desc = data['club_desc']
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Club description updated successfully',
+            'club_id': club.Club_ID,
+            'new_description': club.Club_Desc
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/clubs/<int:club_id>/invite-code', methods=['PUT'])
+@token_required
+def update_club_invite_code(current_user, club_id):
+    """
+    (A) Update the invite code of a specific club
+    
+    Takes a new invite code in the request data
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Club does not exist (404)
+        - User is not an admin of the club (403)
+        - Missing required fields (400)
+    """
+    # (A) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (A) Check if user is an admin of the club
+    is_admin = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+    
+    if not is_admin:
+        return jsonify({'error': 'Permission denied. Only club admins can update invite code'}), 403
+    
+    # (A) Validate request data
+    data = request.get_json()
+    if not data or 'invite_code' not in data:
+        return jsonify({'error': 'Missing required field: invite_code'}), 400
+    
+    try:
+        # (A) Update club invite code
+        club.Invite_Code = data['invite_code']
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Club invite code updated successfully',
+            'club_id': club.Club_ID,
+            'new_invite_code': club.Invite_Code
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/clubs/<int:club_id>/events', methods=['GET'])
+@token_required
+def get_club_events(current_user, club_id):
+    """
+    (A) Get all events for a specific club
+    
+    Returns:
+        - JSON response with list of events
+        
+    Error conditions:
+        - Club does not exist (404)
+        - User is not a member of the club (403)
+    """
+    # (A) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (A) Check if user is a member of the club
+    is_member = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID
+    ).first()
+    
+    if not is_member:
+        return jsonify({'error': 'Permission denied. You must be a member to view club events'}), 403
+    
+    try:
+        # (A) Query for all events of the club
+        events = Event.query.filter_by(Club_ID=club_id).all()
+        
+        # (A) Format the results
+        events_list = [{
+            'event_id': event.Event_ID,
+            'description': event.Event_Desc,
+            'location': event.Event_Location,
+            'date': event.Event_Date.strftime('%Y-%m-%d')
+        } for event in events]
+        
+        return jsonify({
+            'events': events_list,
+            'count': len(events_list)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/clubs/<int:club_id>/profile-picture', methods=['POST'])
+@token_required
+def add_club_profile_picture(current_user, club_id):
+    """
+    (M) Add or update a profile picture for a club.
+    User must be an admin of the club.
+
+    Takes in an uploaded image file (png, jpg, jpeg).
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Club doesn't exist (404)
+        - User is not an admin of the club (403)
+        - No image / invalid image file provided (400)
+    """
+    # (M) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+        
+    # (M) Check if user is an admin of the club
+    member = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+    
+    if not member:
+        return jsonify({'error': 'Permission denied. Only club admins can update profile pictures'}), 403
+    
+    # (M) Check if file was uploaded
+    if 'image' not in request.files:
+        return jsonify({'error': 'No image file provided'}), 400
+        
+    image_file = request.files['image']
+    
+    if image_file.filename == '':
+        return jsonify({'error': 'No image selected'}), 400
+        
+    # (M) Validate file type
+    allowed_extensions = {'png', 'jpg', 'jpeg'}
+    if not ('.' in image_file.filename and image_file.filename.rsplit('.', 1)[1].lower() in allowed_extensions):
+        return jsonify({'error': 'Invalid file type. Allowed: png, jpg, jpeg'}), 400
+    
+    try:
+        # (M) Generate a unique filename
+        filename = f"club_{club_id}_profile_{int(time.time())}.{image_file.filename.rsplit('.', 1)[1].lower()}"
+        
+        # (M) Define upload path (ensure this directory exists)
+        upload_dir = os.path.join(app.root_path, 'static', 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # (M) Save the file
+        file_path = os.path.join(upload_dir, filename)
+        image_file.save(file_path)
+        
+        # (M) Store relative path in database
+        relative_path = f"/static/uploads/{filename}"
+        
+        # (M) Check if a profile picture already exists
+        existing_profile = Image.query.filter_by(
+            Club_ID=club_id,
+            Profile_Pic=True
+        ).first()
+        
+        if existing_profile:
+            # (M) Update existing record
+            existing_profile.Image_Link = relative_path
+            existing_profile.Date_Added = datetime.now().date()
+        else:
+            # (M) Create new record
+            new_image = Image(
+                Club_ID=club_id,
+                Image_Link=relative_path,
+                Date_Added=datetime.now().date(),
+                Profile_Pic=True
+            )
+            db.session.add(new_image)
+            
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Profile picture updated successfully',
+            'image_url': relative_path
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/clubs/<int:club_id>/profile-picture', methods=['DELETE'])
+@token_required
+def delete_club_profile_picture(current_user, club_id):
+    """
+    (C) Delete club profile picture
+    User must be an admin of the club.
+
+    Deletes image from table.
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Club doesn't exist (404)
+        - Club image doesn't exist (404)
+        - User is not an admin of the club (403)
+    """
+    # (C) Check if the club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+
+    # (C) Check if the user is an admin of the club
+    is_admin = ClubUser.query.filter_by(
+        Club_ID=club_id,
+        User_ID=current_user.User_ID,
+        Admin=True
+    ).first()
+    
+    if not is_admin:
+        return jsonify({'error': 'Permission denied. Only admins can delete profile pictures'}), 403
+
+    try:
+        # (C) Find the profile picture
+        profile_pic = Image.query.filter_by(Club_ID=club_id, Profile_Pic=True).first()
+        if not profile_pic:
+            return jsonify({'error': 'No profile picture found for this club'}), 404
+
+        # (C) Delete the profile picture record
+        db.session.delete(profile_pic)
+        db.session.commit()
+
+        return jsonify({'message': 'Club profile picture deleted successfully'}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/clubs/<int:club_id>/profile-picture', methods=['GET'])
+def get_club_profile_picture(club_id):
+    """
+    (M) Get the profile picture for a club.
+    
+    Returns:
+        - JSON response with success/error message and status code
+        
+    Error conditions:
+        - Club doesn't exist (404)
+        - No profile picture found (404)
+    """
+    # (M) Check if club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
+    
+    # (M) Get the profile picture record
+    profile_pic = Image.query.filter_by(
+        Club_ID=club_id,
+        Profile_Pic=True
+    ).first()
+    
+    if not profile_pic:
+        return jsonify({'error': 'No profile picture set for this club'}), 404
+    
+    return jsonify({
+        'club_id': club_id,
+        'club_name': club.Club_Name,
+        'image_url': profile_pic.Image_Link,
+        'date_added': profile_pic.Date_Added.strftime('%Y-%m-%d')
+    }), 200
 
 def drop_all_tables():
     """
