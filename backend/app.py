@@ -983,26 +983,27 @@ def get_club_profile_picture(club_id):
         'date_added': profile_pic.Date_Added.strftime('%Y-%m-%d')
     }), 200
 
-@app.route('/clubs/<int:club_id>/events/<int:event_id>', methods=['DELETE'])
+@app.route('/clubs/<int:club_id>/profile-picture', methods=['DELETE'])
 @token_required
-def delete_event(current_user, club_id, event_id):
+def delete_club_profile_picture(current_user, club_id):
     """
-    (C) Admin member can delete an event for their club
-    
-    Deletes selected event from schedule
+    (C) Delete club profile picture
+    User must be an admin of the club.
+
+    Deletes image from table.
     
     Returns:
         - JSON response with success/error message and status code
         
     Error conditions:
+        - Club doesn't exist (404)
+        - Club image doesn't exist (404)
         - User is not an admin of the club (403)
-        - Event not found (404)
-        - Failed to delete (500)
     """
-    # (C) Check if event exists
-    event = Event.query.get(event_id)
-    if not event or event.Club_ID != club_id:
-        return jsonify({'error': 'Event not found or does not belong to this club'}), 404
+    # (C) Check if the club exists
+    club = Club.query.get(club_id)
+    if not club:
+        return jsonify({'error': 'Club not found'}), 404
 
     # (C) Check if the user is an admin of the club
     is_admin = ClubUser.query.filter_by(
@@ -1010,19 +1011,25 @@ def delete_event(current_user, club_id, event_id):
         User_ID=current_user.User_ID,
         Admin=True
     ).first()
-
+    
     if not is_admin:
-        return jsonify({'error': 'Permission denied. Only club admins can delete events'}), 403
+        return jsonify({'error': 'Permission denied. Only admins can delete profile pictures'}), 403
 
     try:
-        # (C) Delete the event
-        db.session.delete(event)
+        # (C) Find the profile picture
+        profile_pic = Image.query.filter_by(Club_ID=club_id, Profile_Pic=True).first()
+        if not profile_pic:
+            return jsonify({'error': 'No profile picture found for this club'}), 404
+
+        # (C) Delete the profile picture record
+        db.session.delete(profile_pic)
         db.session.commit()
-        return jsonify({'message': 'Event successfully deleted'}), 200
-    
+
+        return jsonify({'message': 'Club profile picture deleted successfully'}), 200
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({'error': f'Failed to delete event: {str(e)}'}), 500
+        return jsonify({'error': str(e)}), 500
 
 def drop_all_tables():
     """
