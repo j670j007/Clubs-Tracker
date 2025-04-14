@@ -44,6 +44,7 @@ function ClubPage() {
     const [isEditingInviteCode, setIsEditingInviteCode] = useState(false);
     const [editedInviteCode, setEditedInviteCode] = useState('');
 
+    const [clubImageSrc, setClubImageSrc] = useState(logo);
     const [events, setEvents] = useState([]);
     const [isAddingEvent, setIsAddingEvent] = useState(false);
     const [eventsLoading, setEventsLoading] = useState(false);
@@ -56,6 +57,7 @@ function ClubPage() {
     useEffect(() => {
         fetchClubDetails();
         fetchClubEvents();
+        fetchClubPic();
     }, [clubId]); // (A) when clubId loads, fetch club information and club events
 
     const fetchClubDetails = async () => {
@@ -214,6 +216,26 @@ function ClubPage() {
         }
     };
 
+    const fetchClubPic = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}/profile-picture`, { // (A) get the club picture of a club
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
+            const data = await response.json();
+            // console.log(`http://127.0.0.1:5000${data.image_url}`);
+            const localImage = `http://127.0.0.1:5000${data.image_url}`;
+            setClubImageSrc(localImage);
+        } catch (err) {
+            return false;
+        }
+    };
+
     const handleDelete = async (id) => { // (A) function to handle deleting when clicking the button
         const userInput = prompt("Are you sure you want to delete this club?"); // (A) prompt to check user input
         if (["yes", "y"].includes(userInput.toLowerCase().trim())) { // (A) if a variation of yes or y, then start the deletion process
@@ -263,6 +285,52 @@ function ClubPage() {
         }
     };
 
+    const handlePicSelect = async (e) => { // (A) function to handle image upload
+        if (e.target.files && e.target.files[0]) { // (A) confirm that there is a valid file
+            const file = e.target.files[0];
+
+            const formData = new FormData(); // (A) create a new formdata obj to post to our backend
+            formData.append('image', file); // (A) add the image data we uploaded
+
+            try {
+                await fetch(`http://127.0.0.1:5000/clubs/${clubId}/profile-picture`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: formData
+                });
+
+                e.target.value = '';
+                location.reload(true); // (A) refresh page
+            } catch (error) {
+                console.error('Upload failed:', error);
+            }
+        }
+    };
+
+    const deleteProfilePicture = async () => {
+        const userInput = prompt("Are you sure you want to delete this picture?"); // (A) prompt to check user input
+        if (["yes", "y"].includes(userInput.toLowerCase().trim())) { 
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}/profile-picture`, { // (A) send delete request to endpoint
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+        
+                if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+        
+                const data = await response.json();
+                location.reload(true); // (A) refresh the page cause im too lazy to create a persistent image state for smooth refresh
+            } catch (err) {
+                console.error("Error deleting profile picture:", err);
+                throw err;
+            }
+        }
+    };
+
     const handleLogout = () => { // (A) handle logout, remove session, navigate back to login
         logout();
         navigate('/login');
@@ -298,7 +366,18 @@ function ClubPage() {
             <div className="innerDiv">
                 <div id="navBar">
                     <div className="leftHeader">
-                        <img src={logo}></img>
+                        <label htmlFor="imageUpload" className="upload-button">
+                            <img src={clubImageSrc}></img>
+                        </label>
+                        {clubData.is_admin &&
+                        (<input
+                            id="imageUpload"
+                            type="file"
+                            accept="image/png, image/jpeg, image/jpg"
+                            onChange={handlePicSelect}
+                            style={{ display: 'none' }}
+                        />)}
+                        {clubData.is_admin && (<span><a className='deletePic' onClick={deleteProfilePicture}>X</a></span>)}
                         <span className="clubDate">
                             <h1>{clubData.name}</h1>
                             {(clubData.is_admin) ? (<span className="adminBadge">Admin</span>) : (<span className="memberBadge">Member</span>)}

@@ -517,3 +517,15 @@
         grid-template-columns: 1fr;
     }
 }
+
+.deletePic {
+    max-height: 5px;
+    max-width: 5px;
+    font-size: 10px;
+    margin: 0;
+    padding: 0;
+    padding-top: 10px;
+    display: flex;
+    color: rgb(128, 29, 29);
+    cursor: pointer;
+}
