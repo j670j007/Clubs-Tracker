@@ -150,6 +150,20 @@ We divided up tasks for the current sprint.  Anil - front end, Elizabeth - delet
 Talked about our requirements for our final sprint.  We decided to go with club gallery, which will use the existing images table.  
 
 Next week's meeting will be same time (tentative), 6:30 on Tuesday.  
+---------------------------------------------------------------------------------------------------------------
+Weekly team meeting 4/15/25:
+
+In attendance:  Anil, Elizabeth, Jennifer, Justin, Michelle
+
+Today's meeting was to decide tasks for the final sprint.  Instead of adding a gallery of club pictures, we decided to refactor/clean up some of the code we already wrote, and add to existing functionality.
+
+Anil and Justin will work on making the front end look as clean as possible.
+
+Michelle will work on the invite code functionality, adding logic to avoid duplicates.
+
+Elizabeth will add logic to the delete member function, to automatically delete a club with 0 members.
+
+Jennifer will add password security.  All passwords will need to be at least 8 characters, one capital letter, one number, one special character. 
 
 
 
