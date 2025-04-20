@@ -1,9 +1,9 @@
 """
 File: app.py
 Description: Backend Flask application for club tracking system
-Author(s): Michelle Chen, Jennifer Aber, Claire Channel
+Author(s): Michelle Chen, Jennifer Aber, Claire Channel, Anil Thapa
 Creation Date: 02/13/2025
-Revised: 04/04/2025 - (M) Add "get club profile picture" function
+Revised: 04/20/2025 - (M) Add checks for duplicate club invite code
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
@@ -346,6 +346,7 @@ def create_club(current_user):
 
     Error conditions:
         - Duplicate club name (400)
+        - Duplicate invite code (400)
         - Missing required fields (400)
     """
     data = request.get_json()  # (M) Parse JSON request data
@@ -359,6 +360,11 @@ def create_club(current_user):
     # (M) Check if a club with the same name already exists
     if Club.query.filter_by(Club_Name=data['club_name']).first():
         return jsonify({'error': 'Club name already exists'}), 400
+    
+    # (M) Check for duplicate invite code
+    existing_club = Club.query.filter_by(Invite_Code=data['invite_code']).first()
+    if existing_club:
+        return jsonify({'error': 'Invite code already in use. Please choose a different code.'}), 400
            
     try:
         # (M) Create new club object
@@ -777,6 +783,7 @@ def update_club_invite_code(current_user, club_id):
         - Club does not exist (404)
         - User is not an admin of the club (403)
         - Missing required fields (400)
+        - Invite code already in use (400)
     """
     # (A) Check if club exists
     club = Club.query.get(club_id)
@@ -797,6 +804,15 @@ def update_club_invite_code(current_user, club_id):
     data = request.get_json()
     if not data or 'invite_code' not in data:
         return jsonify({'error': 'Missing required field: invite_code'}), 400
+    
+    # (M) Check for duplicate invite code
+    existing_club = Club.query.filter(
+        Club.Invite_Code == data['invite_code'], 
+        Club.Club_ID != club_id  # Exclude current club from check
+    ).first()
+
+    if existing_club:
+        return jsonify({'error': 'Invite code already in use. Please choose a different code.'}), 400
     
     try:
         # (A) Update club invite code
