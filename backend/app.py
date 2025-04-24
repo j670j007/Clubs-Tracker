@@ -3,7 +3,7 @@ File: app.py
 Description: Backend Flask application for club tracking system
 Author(s): Michelle Chen, Jennifer Aber, Claire Channel
 Creation Date: 02/13/2025
-Revised: 04/04/2025 - (M) Add "get club profile picture" function
+Revised: 04/24/2025 - (JA) Add password_registration function
 
 Preconditions:
 - MySQL server running on localhost with database 'club_tracker'
