@@ -46,6 +46,7 @@ from werkzeug.security import generate_password_hash, check_password_hash  # (C)
 from flask_cors import CORS
 import os
 import time
+import re
 
 # (C) Initialize Flask application
 app = Flask(__name__)
@@ -250,6 +251,7 @@ def register():
         JSON response with success/error message and status code
     
     Error conditions:
+        - Password requirements not met (400) (JA 4/24/25)
         - Missing required fields (400)
         - Email already registered (400)
         - Login ID already taken (400)
@@ -262,6 +264,10 @@ def register():
     for field in required_fields:
         if field not in data:
             return jsonify({'error': f'Missing required field: {field}'}), 400
+        
+    # (M) Validate password requirements
+    if password_requirements(data['password']) == 0:
+        return jsonify({'error': 'Password must be at least 8 characters long, and include 1 capital letter, 1 number, and 1 special character.'}), 400
     
     # (M) Check for existing email in database
     if User.query.filter_by(Email=data['email']).first():
@@ -1030,6 +1036,30 @@ def delete_club_profile_picture(current_user, club_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+    
+def password_requirements(password):
+    """
+    (JA) Check that password meets requirements
+    New passwords must be at least 8 characters long, contain at least 1 capital letter,
+    1 number, and 1 special character
+
+    Returns:
+        - Boolean - 1 (password meets requirement) or 0 (password does not meet requirement)
+    
+    """
+    # Check for at least 8 characters
+    if len(password) < 8:
+        return 0
+    # Check for at least 1 capital letter
+    if not re.search(r'[A-Z]', password):
+        return 0
+    # Check for at least 1 number
+    if not re.search(r'[0-9]', password):
+        return 0
+    # Check for at least 1 special character
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return 0
+    return 1
 
 def drop_all_tables():
     """
