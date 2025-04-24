@@ -561,6 +561,11 @@ def leave_club(current_user):
     try:
         db.session.delete(existing_member)
         db.session.commit()
+
+        #(C) added this line for deleting club when all members are gone
+        #calls the check funtion
+        deleted = delete_if_no_members(data['club_id'])
+
         return jsonify({'message': 'Successfully left club'}), 201
     except Exception as e:
         db.session.rollback()
@@ -1032,6 +1037,37 @@ def get_club_profile_picture(club_id):
         'image_url': profile_pic.Image_Link,
         'date_added': profile_pic.Date_Added.strftime('%Y-%m-%d')
     }), 200
+
+def delete_if_no_members(club_id):
+    """
+    (C) Delete club from DB if no members.
+    
+    Returns:
+        - error message
+        
+    Error conditions:
+        - if club failed to delete
+    """
+    #(C) Check if the club has any members
+    member_count = ClubUser.query.filter_by(Club_ID=club_id).count()
+    if member_count == 0:
+        try:
+            #(C) Delete related events
+            Event.query.filter_by(Club_ID=club_id).delete()
+
+            #(C) Delete related images
+            Image.query.filter_by(Club_ID=club_id).delete()
+
+            #(C) Finally, delete the club itself
+            club = Club.query.get(club_id)
+            if club:
+                db.session.delete(club)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Failed to auto-delete empty club {club_id}: {e}")
+    return False
 
 def drop_all_tables():
     """
