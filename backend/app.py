@@ -359,7 +359,7 @@ def create_club(current_user):
    
     # (M) Validate that all required fields are present
     required_fields = ['club_name', 'club_desc', 'invite_code']
-    for field in required_fields:
+    for field in required_fields:   
         if field not in data:
             return jsonify({'error': f'Missing required field: {field}'}), 400
 
@@ -573,11 +573,46 @@ def leave_club(current_user):
     try:
         db.session.delete(existing_member)
         db.session.commit()
+        
+        #(C) added this line for deleting club when all members are gone
+        #calls the check funtion
+        deleted = delete_if_no_members(data['club_id'])
+        
         return jsonify({'message': 'Successfully left club'}), 201
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
+def delete_if_no_members(club_id):
+    """
+    (C) Delete club from DB if no members.
+    
+    Returns:
+        - error message
+        
+    Error conditions:
+        - if club failed to delete
+    """
+    #(C) Check if the club has any members
+    member_count = ClubUser.query.filter_by(Club_ID=club_id).count()
+    if member_count == 0:
+        try:
+            #(C) Delete related events
+            Event.query.filter_by(Club_ID=club_id).delete()
+
+            #(C) Delete related images
+            Image.query.filter_by(Club_ID=club_id).delete()
+
+            #(C) Finally, delete the club itself
+            club = Club.query.get(club_id)
+            if club:
+                db.session.delete(club)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            print(f"Failed to auto-delete empty club {club_id}: {e}")
+    return False
 
 @app.route('/clubs/<int:club_id>', methods=['GET'])
 @token_required
