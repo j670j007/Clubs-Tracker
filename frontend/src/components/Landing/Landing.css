@@ -25,10 +25,10 @@
 }
 
 #innerDiv {
-    height: 97%;
-    width: 98%;
+    height: 100%;
+    width: 100%;
     align-self: center;
-    border-radius: 30px;
+    /* border-radius: 30px; */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -40,7 +40,7 @@
 #landingPage {
     display: flex;
     height: 100%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
 }
 
 #clubsList {
@@ -183,15 +183,14 @@
 .clubContent {
     display: flex;
     flex-direction: column;
-    height: 88%;
-    background-image: url('../../assets/note.png');
+    height: 100%;
+    /* background-image: url('../../assets/note.png'); */
     background-size: 95%;
     background-position: center;
     background-blend-mode: overlay;
-    padding: 0px 0px 0px 10px;
+    padding: 10px 10px;
     text-align: center;
     overflow: hidden;
-    gap: 8px;
 }
 
 .clubContent p,
@@ -199,7 +198,13 @@
     margin: 0;
 }
 
-.clubContent .clubName {
+.clubHeader .clubName {
+    font-family: 'Playfair Display', serif;
+    color: black;
+    font-size: 12px;
+}
+
+.clubContent {
     font-size: 20px;
     color: rgb(36, 50, 183);
     font-family: 'Playfair Display', serif;

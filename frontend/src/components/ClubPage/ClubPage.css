@@ -23,10 +23,10 @@
 }
 
 .innerDiv {
-    height: 97%;
-    width: 98%;
+    height: 100%;
+    width: 100%;
     align-self: center;
-    border-radius: 30px;
+    /* border-radius: 30px; */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -74,7 +74,30 @@
     width: 90%;
     gap: 30px;
     margin-top: 50px;
+    margin-bottom: 350px;
     min-height: 50%;
+}
+
+#navBar .leftHeaderC {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    padding-left: 100px;
+}
+
+.clubPic {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    width: 400px;
+    height: 400px;
+    align-items: center;
+}
+
+.clubPic .upload-button img {
+    width: 400px;
+    height: 400px;
 }
 
 .clubCard {
@@ -163,7 +186,6 @@
 }
 
 .editClubButton {
-    height: 10%;
     width: 10%;
     background-color: rgba(255, 255, 255, 0);
     outline: none;
@@ -450,6 +472,8 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 24px;
+    display: flex;
+    flex-direction: column;
 }
 
 .clubActivity h2 {

@@ -30,6 +30,7 @@ function Landing() {
     const navigate = useNavigate(); // (A) useNavigate to move from page to page in a reactive fashion
     const [showCreateClub, setShowCreateClub] = useState(false); // (A) create club state on whether or not the module is displayed
     const [clubs, setClubs] = useState([]); // (A) current clubs of the current user 
+    const [clubImages, setClubImages] = useState({}); // (A) images for the club profiles to load into
     const [loading, setLoading] = useState(true); // (A) loading frame while clubs isn't set until the next refresh cycle
 
     const { logout } = useAuth(); // (A) logout function hooked from the authentication context
@@ -58,7 +59,9 @@ function Landing() {
 
             if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`); // (A) if response code is out of 200s, throw the error along with the status msg
             setClubs(data.clubs); // (A) update the current state of the clubs
-            // console.log(data.clubs); debugging print
+            console.log(data.clubs); // debugging print
+            const imagePromises = data.clubs.map(club => fetchClubPic(club.club_id));
+            await Promise.all(imagePromises);
 
             console.log(response.message);
             return true;
@@ -104,6 +107,36 @@ function Landing() {
         setShowCreateClub(false); // (A) close the module
     }
 
+    const fetchClubPic = async (clubId) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/clubs/${clubId}/profile-picture`, { // (A) get the club picture of a club
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`);
+
+            const data = await response.json();
+            // console.log(`http://127.0.0.1:5000${data.image_url}`);
+            const localImage = `http://127.0.0.1:5000${data.image_url}`;
+            setClubImages(prev => ({
+                ...prev,
+                [clubId]: localImage
+            }));
+            console.log('b');   
+            return true
+        } catch (err) {
+            setClubImages(prev => ({
+                ...prev,
+                [clubId]: 'http://127.0.0.1:5000/static/logo.svg'
+            }));
+            console.log('a');
+            return false;
+        }
+    };
+
     return (
         <div id="landingDiv">
             <div id="blurFilter"></div>
@@ -139,10 +172,10 @@ function Landing() {
                                 <div key={club.club_id} className="clubNote">
                                     <div className="clubHeader">
                                         {club.is_admin ? (<p className="adminCheck">Admin</p>) : (<p>Member</p>)}
+                                        <p className="clubName">{club.name}</p>
                                     </div>
                                     <div className="clubContent" onClick={() => navigate(`/clubs/${club.club_id}`)}>
-                                        <p className="clubName">{club.name}</p>
-                                        <p className="clubDesc">{club.club_desc}</p>
+                                        <img src={clubImages[club.club_id]}></img>
                                     </div>
                                 </div>
                             ))}

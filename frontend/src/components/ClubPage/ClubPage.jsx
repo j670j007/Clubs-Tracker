@@ -365,21 +365,9 @@ function ClubPage() {
             <div id="blurFilter"></div>
             <div className="innerDiv">
                 <div id="navBar">
-                    <div className="leftHeader">
-                        <label htmlFor="imageUpload" className="upload-button">
-                            <img src={clubImageSrc}></img>
-                        </label>
-                        {clubData.is_admin &&
-                        (<input
-                            id="imageUpload"
-                            type="file"
-                            accept="image/png, image/jpeg, image/jpg"
-                            onChange={handlePicSelect}
-                            style={{ display: 'none' }}
-                        />)}
-                        {clubData.is_admin && (<span><a className='deletePic' onClick={deleteProfilePicture}>X</a></span>)}
+                    <div className="leftHeaderC">
                         <span className="clubDate">
-                            <h1>{clubData.name}</h1>
+                            <h1 style={{padding: "15px 1150px 25px 20px"}}>{clubData.name}</h1>
                             {(clubData.is_admin) ? (<span className="adminBadge">Admin</span>) : (<span className="memberBadge">Member</span>)}
                             Created: {clubData.date_added}</span>
                     </div>
@@ -426,6 +414,22 @@ function ClubPage() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                    <div className="clubPic">
+                        <div className="clubCardHeader">
+                            <label htmlFor="imageUpload" className="upload-button">
+                                    <img src={clubImageSrc}></img>
+                                </label>
+                                {clubData.is_admin &&
+                                (<input
+                                    id="imageUpload"
+                                    type="file"
+                                    accept="image/png, image/jpeg, image/jpg"
+                                    onChange={handlePicSelect}
+                                    style={{ display: 'none' }}
+                                />)}
+                                {clubData.is_admin && (<span><a className='deletePic' onClick={deleteProfilePicture}>X</a></span>)}
+                        </div>
                     </div>
                     <div className="clubActivity">
                         <div className="clubCardHeader">
